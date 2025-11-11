@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ZepSwipe Vendors — On-Chain Campus Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --zep-blue: #00f0ff;
+  --zep-violet: #9c4dff;
+  --zep-lime: #a6ff00;
+  --glass: rgba(255,255,255,0.06);
+  --bg: radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
+}
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: #fff;
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Header */
+header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 22px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  animation: headerGlow 3s infinite alternate ease-in-out;
+  box-shadow: 0 0 18px rgba(0,240,255,0.15);
+}
+@keyframes headerGlow {
+  0% { box-shadow: 0 0 10px rgba(0,240,255,0.25); }
+  100% { box-shadow: 0 0 35px rgba(156,77,255,0.5); }
+}
+.logo {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(0,240,255,0.6);
+}
+.connect-btn {
+  padding: 10px 20px;
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color: #050018;
+  border-radius: 999px;
+  font-family: 'Orbitron';
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.connect-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(0,240,255,0.4);
+}
+/* Hero */
+.hero {
+  text-align: center;
+  margin: 3rem 1rem;
+}
+.hero h1 {
+  font-family: 'Orbitron';
+  font-size: 2.2rem;
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(0,240,255,0.4);
+}
+.hero p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  max-width: 600px;
+  margin: 0.5rem auto;
+}
+.hero button {
+  margin-top: 1.5rem;
+  background: linear-gradient(90deg,var(--zep-lime),var(--zep-blue));
+  color: #050018;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 12px 30px;
+  transition: 0.3s;
+}
+.hero button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(0,240,255,0.5);
+}
+/* Marketplace */
+.market {
+  padding: 1rem 1.5rem 3rem;
+}
+.section-title {
+  font-family: 'Orbitron';
+  font-size: 1.3rem;
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+  gap: 1rem;
+}
+.card {
+  background: var(--glass);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 16px;
+  text-align: center;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 0 20px rgba(0,240,255,0.15);
+  animation: pulseCard 3s infinite alternate ease-in-out;
+  transition: 0.3s;
+}
+.card:hover { transform: translateY(-5px) scale(1.03); }
+@keyframes pulseCard {
+  0% { box-shadow: 0 0 10px rgba(0,240,255,0.1); }
+  100% { box-shadow: 0 0 30px rgba(156,77,255,0.3); }
+}
+.card img {
+  width: 70px; height: 70px;
+  filter: drop-shadow(0 0 10px rgba(0,240,255,0.4));
+}
+.price {
+  font-family: 'Orbitron';
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 6px 0;
+}
+.btn-buy {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color: #050018;
+  font-weight: 600;
+  font-family: 'Orbitron';
+  text-decoration: none;
+  transition: 0.3s;
+}
+.btn-buy:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(0,240,255,0.5);
+}
+.badge {
+  background: linear-gradient(90deg,var(--zep-lime),var(--zep-blue));
+  color: #050018;
+  font-weight: 700;
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* Analytics Section */
+.analytics {
+  padding: 1rem 1.5rem 6rem;
+}
+.analytics-card {
+  background: var(--glass);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 25px rgba(0,240,255,0.2);
+  animation: pulseCard 3s infinite alternate ease-in-out;
+}
+.analytics h2 {
+  font-family: 'Orbitron';
+  font-size: 1.2rem;
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+}
+
+/* Footer */
+footer {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100%;
+  background: rgba(15,15,30,0.9);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 10px 0;
+  box-shadow: 0 0 25px rgba(0,240,255,0.3);
+  animation: footerPulse 3s infinite alternate ease-in-out;
+}
+@keyframes footerPulse {
+  0% { box-shadow: 0 0 15px rgba(0,240,255,0.2); }
+  100% { box-shadow: 0 0 35px rgba(156,77,255,0.4); }
+}
+.footer-icon svg {
+  width: 28px; height: 28px;
+  stroke: var(--zep-blue);
+  transition: 0.3s;
+  filter: drop-shadow(0 0 8px var(--zep-violet));
+}
+.footer-icon:hover svg {
+  stroke: var(--zep-violet);
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px var(--zep-blue));
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">ZepSwipe Vendors</div>
+  <button class="connect-btn" onclick="connectWallet()">Connect Wallet</button>
+</header>
+
+<section class="hero">
+  <h1>Campus Vendors On-Chain</h1>
+  <p>Empowering verified campus stores to earn, store, and sell using decentralized storage via <strong>Walrus</strong> & verified data through <strong>Seal</strong> and <strong>Nautilus</strong>.</p>
+  <button onclick="window.location.href='dashboard-store.html'">List a Product</button>
+</section>
+
+<section class="market">
+  <h2 class="section-title">Featured Vendors</h2>
+  <div class="product-grid">
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/860/860784.png" alt="Phone"/>
+      <p>Smartphone 12 Pro</p>
+      <p class="price">220 USDT</p>
+      <span class="badge">Campus Verified</span><br>
+      <a href="#" class="btn-buy">Add to Cart</a>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2232/2232688.png" alt="eBook"/>
+      <p>Design eBook Pack</p>
+      <p class="price">30 ZAC</p>
+      <span class="badge">Verified</span><br>
+      <a href="#" class="btn-buy">Add to Cart</a>
+    </div>
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" alt="Burger"/>
+      <p>McCampus Meal</p>
+      <p class="price">4.50 USDT</p>
+      <span class="badge">Partnered Vendor</span><br>
+      <a href="#" class="btn-buy">Order Now</a>
+    </div>
+  </div>
+</section>
+
+<section class="analytics">
+  <div class="analytics-card">
+    <h2>Live Sales Analytics</h2>
+    <canvas id="salesChart"></canvas>
+  </div>
+</section>
+
+<footer>
+  <a href="dashboard-wallet.html" class="footer-icon" title="Wallet">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M16 12h4"/></svg>
+  </a>
+  <a href="digital-product.html" class="footer-icon" title="Sell">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 3v18m9-9H3"/></svg>
+  </a>
+  <a href="dashboard-store.html" class="footer-icon" title="Store">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path d="M3 6h18l-2 12H5z"/></svg>
+  </a>
+  <a href="profile.html" class="footer-icon" title="Profile">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+  </a>
+</footer>
+
+<script>
+function connectWallet() {
+  alert("Wallet connected via Base/MetaMask simulation.");
+}
+
+// Sales Chart
+const ctx = document.getElementById('salesChart').getContext('2d');
+const salesChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: Array.from({length:10}, (_,i)=>`T-${10-i}`),
+    datasets: [{
+      label: 'Live Sales ($ZAC)',
+      data: Array.from({length:10}, ()=>Math.floor(Math.random()*20)+10),
+      borderColor: '#00f0ff',
+      backgroundColor: 'rgba(0,240,255,0.15)',
+      fill: true,
+      tension: 0.4,
+      pointRadius: 4,
+      pointHoverRadius: 6
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false }},
+    scales: {
+      x: { ticks: { color: '#9c9cff' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      y: { ticks: { color: '#9c9cff' }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+    }
+  }
+});
+
+// Live data refresh
+setInterval(()=>{
+  const val = Math.floor(Math.random()*25)+5;
+  salesChart.data.datasets[0].data.shift();
+  salesChart.data.datasets[0].data.push(val);
+  salesChart.update();
+}, 2000);
+</script>
+
+</body>
+</html>
