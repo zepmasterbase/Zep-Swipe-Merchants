@@ -111,6 +111,22 @@ header {
 }
 .card .cta:hover { transform:scale(1.05); box-shadow:0 0 22px rgba(156,77,255,0.45); }
 
+/* ===== Floating Ask Zep AI Button ===== */
+.ask-ai {
+  position:fixed; bottom:85px; right:20px;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050018; font-family:'Orbitron'; font-weight:700;
+  border:none; border-radius:999px; padding:12px 24px;
+  box-shadow:0 0 25px rgba(0,240,255,0.5);
+  cursor:pointer; z-index:999; transition:.3s;
+  animation:pulseGlow 2.4s ease-in-out infinite alternate;
+}
+.ask-ai:hover { transform:scale(1.08); box-shadow:0 0 40px rgba(156,77,255,0.8); }
+@keyframes pulseGlow {
+  0% { box-shadow:0 0 15px rgba(0,240,255,0.4); opacity:0.9; }
+  100% { box-shadow:0 0 40px rgba(156,77,255,0.8); opacity:1; }
+}
+
 /* ===== Footer ===== */
 footer {
   position:fixed; bottom:0; left:0; width:100%;
@@ -135,9 +151,7 @@ footer {
 
 /* ===== Responsive ===== */
 @media (max-width:600px) {
-  .logo { font-size:1.1rem; }
-  h2.section-title { font-size:1rem; }
-  .card img { width:60px; height:60px; }
+  .ask-ai { bottom:95px; right:15px; padding:10px 18px; font-size:.85rem; }
 }
 </style>
 </head>
@@ -197,6 +211,9 @@ footer {
     <canvas id="salesChart"></canvas>
   </section>
 </main>
+
+<!-- Floating Ask Zep AI Button -->
+<button class="ask-ai" onclick="window.location.href='zep-ai.html'">💬 Ask Zep AI</button>
 
 <footer>
   <a href="wallet.html" class="footer-icon" title="Wallet">
