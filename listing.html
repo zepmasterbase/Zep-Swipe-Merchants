@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Zep Swipe Merchants — New Listing</title>
+<title>Zep Swipe Merchants — Product Listings</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -25,11 +25,10 @@ body {
   padding-bottom:90px;
 }
 
-/* Header */
+/* ===== Header ===== */
 header {
   display:flex; justify-content:space-between; align-items:center;
-  padding:14px 18px;
-  background:rgba(255,255,255,0.08);
+  padding:14px 18px; background:rgba(255,255,255,0.08);
   backdrop-filter:blur(18px);
   border-bottom:1px solid rgba(255,255,255,0.1);
   position:sticky; top:0; z-index:60;
@@ -38,8 +37,7 @@ header {
 .logo {
   font-family:'Orbitron',sans-serif;
   background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   font-weight:700;
   font-size:1.2rem;
 }
@@ -49,7 +47,7 @@ header {
 }
 .logout-btn:hover { transform:scale(1.1); filter:drop-shadow(0 0 12px var(--zep-violet)); }
 
-/* Glass Panel */
+/* ===== Glass Panel ===== */
 .glass {
   background:var(--glass); backdrop-filter:blur(16px);
   border-radius:16px; border:1px solid rgba(255,255,255,0.1);
@@ -68,7 +66,7 @@ header {
   margin-bottom:1rem;
 }
 
-/* Form */
+/* ===== Form ===== */
 form label { font-size:.9rem; opacity:.9; display:block; margin-bottom:6px; }
 form input, select, textarea {
   width:100%; padding:10px 12px; border-radius:10px;
@@ -82,11 +80,8 @@ form input:focus, textarea:focus, select:focus {
   box-shadow:0 0 10px rgba(0,240,255,0.3);
 }
 
-/* Image Upload */
-.preview {
-  text-align:center;
-  margin-bottom:1rem;
-}
+/* ===== Image Preview ===== */
+.preview { text-align:center; margin-bottom:1rem; }
 .preview img {
   width:90px; height:90px; object-fit:cover;
   border-radius:12px;
@@ -94,7 +89,7 @@ form input:focus, textarea:focus, select:focus {
   box-shadow:0 0 12px rgba(0,240,255,0.3);
 }
 
-/* Visibility Toggle */
+/* ===== Toggle ===== */
 .toggle {
   display:flex; align-items:center; gap:8px; margin-top:.8rem;
 }
@@ -111,7 +106,7 @@ form input:focus, textarea:focus, select:focus {
 .toggle input:checked { background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet)); }
 .toggle input:checked::before { transform:translateX(20px); background:#050018; }
 
-/* Buttons */
+/* ===== Buttons ===== */
 button.submit-btn {
   width:100%; padding:12px;
   border:none; border-radius:999px;
@@ -124,7 +119,34 @@ button.submit-btn {
 }
 button.submit-btn:hover { transform:scale(1.05); box-shadow:0 0 30px rgba(156,77,255,0.6); }
 
-/* Floating Ask Zep AI */
+/* ===== Listings Preview ===== */
+#productList {
+  margin:1.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px;
+}
+.card {
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px; text-align:center; padding:12px;
+  box-shadow:0 0 15px rgba(0,240,255,0.15);
+  animation:glow 3s infinite alternate ease-in-out;
+}
+.card img {
+  width:70px; height:70px; border-radius:8px;
+  filter:drop-shadow(0 0 10px rgba(0,240,255,0.4));
+}
+.card h3 { font-size:.95rem; margin:8px 0 2px; }
+.card p { font-size:.8rem; opacity:.8; margin:4px 0; }
+.delete-btn {
+  background:linear-gradient(90deg,#ff3c6f,#ff7a00);
+  color:#fff; border:none; border-radius:999px;
+  padding:6px 14px; cursor:pointer; font-size:.8rem;
+  font-family:'Poppins'; margin-top:6px;
+  box-shadow:0 0 15px rgba(255,60,111,0.4);
+  transition:.25s;
+}
+.delete-btn:hover { transform:scale(1.05); box-shadow:0 0 30px rgba(255,60,111,0.6); }
+
+/* ===== Floating Ask Zep AI ===== */
 .ask-ai {
   position:fixed; bottom:85px; right:20px;
   background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
@@ -144,7 +166,7 @@ button.submit-btn:hover { transform:scale(1.05); box-shadow:0 0 30px rgba(156,77
 }
 .ask-ai:hover { transform:scale(1.08); }
 
-/* Footer */
+/* ===== Footer ===== */
 footer {
   position:fixed; bottom:0; left:0; width:100%;
   background:rgba(15,15,30,0.9);
@@ -166,7 +188,7 @@ footer {
 
 <body>
 <header>
-  <div class="logo">New Product Listing</div>
+  <div class="logo">Zep Swipe — Product Listings</div>
   <button class="logout-btn" onclick="window.location.href='index.html'" title="Logout">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#00f0ff" viewBox="0 0 24 24" width="26" height="26" stroke-width="1.8">
       <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -178,8 +200,7 @@ footer {
 
 <main>
   <div class="glass">
-    <h2 class="section-title">List a New Product</h2>
-
+    <h2 class="section-title">Add New Product</h2>
     <form id="listingForm">
       <div class="preview">
         <img id="previewImage" src="https://cdn-icons-png.flaticon.com/512/1040/1040230.png" alt="Preview">
@@ -219,6 +240,11 @@ footer {
       <button type="submit" class="submit-btn">🚀 Publish Listing</button>
     </form>
   </div>
+
+  <div class="glass">
+    <h2 class="section-title">Saved Listings</h2>
+    <div id="productList"></div>
+  </div>
 </main>
 
 <!-- Floating Ask Zep AI -->
@@ -245,25 +271,56 @@ document.getElementById('imageUpload').addEventListener('change', function(e){
   const file = e.target.files[0];
   if(file){
     const reader = new FileReader();
-    reader.onload = function(evt){
-      document.getElementById('previewImage').src = evt.target.result;
-    }
+    reader.onload = evt => document.getElementById('previewImage').src = evt.target.result;
     reader.readAsDataURL(file);
   }
 });
 
-// === Form Handling ===
-document.getElementById('listingForm').addEventListener('submit', function(e){
+// === Load Saved Listings ===
+function loadListings(){
+  const list = JSON.parse(localStorage.getItem('zepListings')) || [];
+  const container = document.getElementById('productList');
+  container.innerHTML = list.map((p,i)=>`
+    <div class="card">
+      <img src="${p.image}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <p>${p.price} ${p.currency}</p>
+      <p><small>${p.category}</small></p>
+      <button class="delete-btn" onclick="deleteListing(${i})">Delete</button>
+    </div>
+  `).join('') || '<p style="opacity:0.7;">No listings yet.</p>';
+}
+
+// === Delete Listing ===
+function deleteListing(index){
+  let list = JSON.parse(localStorage.getItem('zepListings')) || [];
+  list.splice(index,1);
+  localStorage.setItem('zepListings', JSON.stringify(list));
+  loadListings();
+}
+
+// === Save Listing ===
+document.getElementById('listingForm').addEventListener('submit', e=>{
   e.preventDefault();
-  const name = document.getElementById('productName').value;
-  const price = document.getElementById('price').value;
-  const category = document.getElementById('category').value;
-  const currency = document.getElementById('currency').value;
-  const desc = document.getElementById('desc').value;
-  const visible = document.getElementById('visibility').checked ? 'Visible' : 'Hidden';
-  
-  alert(`✅ Listing Created!\n\n${name} — ${price} ${currency}\nCategory: ${category}\nStatus: ${visible}\n\n"${desc}"`);
+  const data = {
+    name:document.getElementById('productName').value,
+    price:document.getElementById('price').value,
+    currency:document.getElementById('currency').value,
+    category:document.getElementById('category').value,
+    desc:document.getElementById('desc').value,
+    visible:document.getElementById('visibility').checked,
+    image:document.getElementById('previewImage').src
+  };
+  let list = JSON.parse(localStorage.getItem('zepListings')) || [];
+  list.push(data);
+  localStorage.setItem('zepListings', JSON.stringify(list));
+  document.getElementById('listingForm').reset();
+  document.getElementById('previewImage').src = "https://cdn-icons-png.flaticon.com/512/1040/1040230.png";
+  loadListings();
+  alert("✅ Product saved locally (Dev Mode)");
 });
+
+loadListings();
 </script>
 </body>
 </html>
