@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Zep Swipe Merchants — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --zep-lime:#a6ff00;
+  --glass:rgba(255,255,255,0.06);
+  --bg:radial-gradient(circle at 20% 10%, #050018 0%, #000010 100%);
+}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
+}
+
+/* HEADER / LOGO */
+.logo{
+  font-family:'Orbitron',sans-serif;
+  font-weight:700;
+  font-size:2rem;
+  text-align:center;
+  margin-bottom:1.5rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 0 25px rgba(0,240,255,0.5);
+  animation:logoPulse 3s infinite alternate;
+}
+@keyframes logoPulse{
+  0%{text-shadow:0 0 12px rgba(0,240,255,0.4);}
+  100%{text-shadow:0 0 28px rgba(156,77,255,0.8);}
+}
+
+/* CARD */
+.glass-card{
+  width:90%;
+  max-width:420px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:18px;
+  padding:2rem 1.5rem;
+  backdrop-filter:blur(20px);
+  box-shadow:0 0 30px rgba(0,240,255,0.15);
+  text-align:center;
+  animation:pulseCard 4s infinite alternate ease-in-out;
+}
+@keyframes pulseCard{
+  0%{box-shadow:0 0 12px rgba(0,240,255,0.2);}
+  100%{box-shadow:0 0 32px rgba(156,77,255,0.3);}
+}
+
+/* BUTTONS */
+.btn{
+  width:100%;
+  margin-top:1rem;
+  padding:12px 18px;
+  border-radius:9999px;
+  border:none;
+  font-family:'Orbitron',sans-serif;
+  font-weight:600;
+  cursor:pointer;
+  transition:all .3s;
+  color:#050018;
+}
+.btn-metamask{
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  box-shadow:0 0 15px rgba(0,240,255,0.3);
+}
+.btn-coinbase{
+  background:linear-gradient(90deg,var(--zep-lime),var(--zep-blue));
+  box-shadow:0 0 15px rgba(0,240,255,0.3);
+}
+.btn:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 30px rgba(156,77,255,0.4);
+}
+.btn svg{
+  width:22px;height:22px;margin-right:10px;vertical-align:middle;
+  filter:drop-shadow(0 0 8px var(--zep-blue));
+}
+.subtitle{
+  margin:0.8rem 0;
+  font-size:0.9rem;
+  opacity:0.7;
+}
+
+/* FOOTER INFO */
+footer{
+  position:fixed;
+  bottom:16px;
+  font-size:0.8rem;
+  opacity:0.6;
+  text-align:center;
+  width:100%;
+  color:#b3f6ff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="logo">ZEP SWIPE MERCHANTS</div>
+
+<div class="glass-card">
+  <h2 class="text-lg font-semibold tracking-wide mb-3" style="font-family:'Orbitron';color:var(--zep-blue);">
+    Connect Your Wallet
+  </h2>
+  <p class="subtitle">Sign in to access your merchant dashboard.</p>
+
+  <!-- MetaMask -->
+  <button class="btn btn-metamask" onclick="connectWallet('metamask')">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#050018" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2l3 5 6 2-6 2-3 5-3-5-6-2 6-2z"/>
+    </svg>
+    Connect MetaMask
+  </button>
+
+  <!-- Coinbase -->
+  <button class="btn btn-coinbase" onclick="connectWallet('coinbase')">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#050018" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="5"/>
+    </svg>
+    Connect Coinbase Wallet
+  </button>
+
+  <p class="subtitle mt-4">Dev Mode: Wallet connections are simulated locally.</p>
+</div>
+
+<footer>© 2025 Zep Swipe Merchants · Campus Commerce On-Chain</footer>
+
+<script>
+function connectWallet(type){
+  // Simulated dev authentication
+  localStorage.setItem('merchantWallet', type);
+  localStorage.setItem('authStatus','authenticated');
+  document.querySelector('.glass-card').innerHTML = `
+    <div style="font-family:'Orbitron';font-size:1.2rem;color:var(--zep-lime);animation:fadeIn .5s;">
+      ✅ ${type.charAt(0).toUpperCase()+type.slice(1)} Wallet Connected!
+    </div>
+    <p style="margin-top:1rem;font-size:0.9rem;opacity:0.8;">Redirecting to your Merchant Dashboard...</p>
+  `;
+  setTimeout(()=>window.location.href='merchants-dashboard.html',1600);
+}
+</script>
+
+</body>
+</html>
