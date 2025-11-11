@@ -72,6 +72,13 @@ header {
   box-shadow:0 0 25px rgba(0,240,255,0.3);
   margin:0 auto 1rem;
   display:block;
+  object-fit:cover;
+}
+.upload-label {
+  display:block; text-align:center;
+  font-size:.8rem; opacity:.8;
+  cursor:pointer; text-decoration:underline;
+  margin-bottom:1rem;
 }
 h2 {
   text-align:center;
@@ -119,20 +126,6 @@ button.save-btn:hover {
   transform:scale(1.05);
   box-shadow:0 0 30px rgba(156,77,255,0.6);
 }
-
-/* ===== Verification Badge ===== */
-.verified {
-  display:inline-flex; align-items:center;
-  gap:6px;
-  background:linear-gradient(90deg,var(--zep-lime),var(--zep-blue));
-  color:#050018;
-  font-weight:700;
-  font-size:0.75rem;
-  padding:4px 8px;
-  border-radius:999px;
-  margin-bottom:1rem;
-}
-.verified svg { width:14px; height:14px; }
 
 /* ===== Floating AI Button ===== */
 .ask-ai {
@@ -187,23 +180,22 @@ footer {
 
 <main>
   <div class="profile-card">
-    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Avatar" class="profile-avatar" />
+    <img id="avatarPreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Avatar" class="profile-avatar" />
+    <label for="avatarUpload" class="upload-label">📷 Upload New Avatar</label>
+    <input type="file" id="avatarUpload" accept="image/*" style="display:none" />
+
     <h2 id="merchantName">Alex Global</h2>
     <p class="role">Campus & Global Vendor</p>
-    <div class="verified">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#050018"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-      Verified Merchant
-    </div>
 
     <label>Store Name</label>
-    <input type="text" id="storeName" value="Alex Global Tech Hub" />
+    <input type="text" id="storeName" placeholder="Store Name" />
 
     <label>Email</label>
-    <input type="email" id="email" value="alexglobal@merchant.com" />
+    <input type="email" id="email" placeholder="Email" />
 
     <label>Country</label>
     <select id="country">
-      <option selected>South Africa</option>
+      <option>South Africa</option>
       <option>Kenya</option>
       <option>Nigeria</option>
       <option>Ghana</option>
@@ -211,11 +203,9 @@ footer {
     </select>
 
     <label>About</label>
-    <textarea id="about" rows="3" placeholder="Tell us about your business...">Supplying verified gadgets and accessories to students globally via Zep Swipe Marketplace.</textarea>
+    <textarea id="about" rows="3" placeholder="Tell us about your business..."></textarea>
 
     <button class="save-btn" onclick="saveProfile()">💾 Save Changes</button>
-
-    <button class="save-btn" style="margin-top:1rem; background:linear-gradient(90deg,var(--zep-lime),var(--zep-blue));" onclick="window.location.href='withdraw.html'">💸 Withdraw to Bank</button>
   </div>
 </main>
 
@@ -238,14 +228,43 @@ footer {
 </footer>
 
 <script>
+// === AUTO SAVE ===
 function saveProfile() {
-  const name = document.getElementById('storeName').value;
-  const email = document.getElementById('email').value;
-  const country = document.getElementById('country').value;
-  const about = document.getElementById('about').value;
-
-  alert(`✅ Profile Saved!\nStore: ${name}\nEmail: ${email}\nCountry: ${country}\nAbout: ${about}`);
+  const profile = {
+    storeName: document.getElementById('storeName').value,
+    email: document.getElementById('email').value,
+    country: document.getElementById('country').value,
+    about: document.getElementById('about').value,
+    avatar: document.getElementById('avatarPreview').src
+  };
+  localStorage.setItem('zepProfile', JSON.stringify(profile));
+  alert('✅ Profile Auto-Saved!');
 }
+
+// === LOAD PROFILE ===
+window.onload = function() {
+  const saved = JSON.parse(localStorage.getItem('zepProfile'));
+  if(saved){
+    document.getElementById('storeName').value = saved.storeName || '';
+    document.getElementById('email').value = saved.email || '';
+    document.getElementById('country').value = saved.country || 'South Africa';
+    document.getElementById('about').value = saved.about || '';
+    document.getElementById('avatarPreview').src = saved.avatar || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+    document.getElementById('merchantName').textContent = saved.storeName || 'Merchant Profile';
+  }
+};
+
+// === AVATAR UPLOAD PREVIEW ===
+document.getElementById('avatarUpload').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt){
+    document.getElementById('avatarPreview').src = evt.target.result;
+    saveProfile(); // auto-save avatar
+  };
+  reader.readAsDataURL(file);
+});
 </script>
 </body>
 </html>
