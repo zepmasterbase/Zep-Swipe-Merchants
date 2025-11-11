@@ -220,13 +220,13 @@ footer {
 <body>
 <header>
   <div class="logo">ZepSwipe Merchants</div>
-  <button class="connect-btn" onclick="connectWallet()">Connect Wallet</button>
+  <button class="connect-btn" onclick="window.location.href='sign-in.html'">Connect Wallet</button>
 </header>
 
 <section class="hero">
   <h1>Campus Merchants On-Chain</h1>
   <p>Empowering verified campus stores to earn, store, and sell using decentralized storage via <strong>Walrus</strong> & verified data through <strong>Seal</strong> and <strong>Nautilus</strong>.</p>
-  <button onclick="window.location.href='dashboard-store.html'">List a Product</button>
+  <button onclick="window.location.href='sign-in.html'">List a Product</button>
 </section>
 
 <section class="market">
@@ -279,10 +279,6 @@ footer {
 </footer>
 
 <script>
-function connectWallet() {
-  alert("Wallet connected via Base/MetaMask simulation.");
-}
-
 // Sales Chart
 const ctx = document.getElementById('salesChart').getContext('2d');
 const salesChart = new Chart(ctx, {
