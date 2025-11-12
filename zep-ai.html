@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Zep AI — Merchants Assistant</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --zep-lime:#a6ff00;
+  --glass: rgba(255,255,255,0.06);
+  --bg: radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
+  --max-width: 1100px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:'Poppins',sans-serif; color:#eafcff; background:var(--bg);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  padding-bottom:96px;
+  display:flex; justify-content:center;
+}
+.container{
+  width:100%; max-width:var(--max-width); padding:20px;
+}
+
+/* header */
+.header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:14px; border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 6px 28px rgba(0,240,255,0.05);
+  margin-bottom:14px;
+}
+.brand{
+  display:flex; align-items:center; gap:12px;
+}
+.logo{
+  width:46px; height:46px; border-radius:10px;
+  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Orbitron'; font-weight:700; color:#050018;
+  box-shadow: 0 0 18px rgba(0,240,255,0.14);
+}
+.title{
+  font-family:'Orbitron'; font-weight:700; font-size:1.05rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.header-actions{ display:flex; gap:10px; align-items:center; }
+
+/* layout */
+.grid{
+  display:grid;
+  grid-template-columns: 1fr 420px;
+  gap:14px;
+}
+@media (max-width:980px){ .grid{ grid-template-columns: 1fr; } }
+
+/* main pane */
+.panel{
+  background:var(--glass); border-radius:12px; padding:14px;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 8px 30px rgba(0,240,255,0.04);
+  min-height:240px;
+}
+.chat{
+  display:flex; flex-direction:column; gap:10px; height:100%;
+}
+.messages{ overflow:auto; padding:8px; display:flex; flex-direction:column; gap:8px; max-height:56vh;}
+.msg{
+  max-width:78%; padding:10px 12px; border-radius:12px; line-height:1.35;
+  font-size:0.95rem;
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+}
+.msg.user{ align-self:flex-end; background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet)); color:#050018; }
+.msg.ai{ align-self:flex-start; background:rgba(255,255,255,0.03); color:#e9f9ff; border:1px solid rgba(255,255,255,0.02); }
+.controls{ display:flex; gap:8px; margin-top:8px; align-items:center; }
+
+/* input */
+.input{
+  flex:1; display:flex; gap:8px; align-items:center;
+  background:rgba(255,255,255,0.03); padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.04);
+}
+.input textarea{
+  width:100%; resize:none; min-height:44px; max-height:120px; border-radius:8px;
+  background:transparent; border:0; outline:none; color:#eafcff; font-size:0.95rem; padding:6px;
+}
+.btn{
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet)); color:#050018;
+  border:0; padding:8px 12px; border-radius:999px; font-weight:700; cursor:pointer;
+  box-shadow:0 8px 20px rgba(0,240,255,0.08);
+}
+.btn.ghost{ background:transparent; color:#bfefff; border:1px solid rgba(255,255,255,0.06); }
+
+/* right column */
+.sidebar{ display:flex; flex-direction:column; gap:12px; }
+.card{ background:var(--glass); padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); }
+
+/* presets */
+.presets{ display:flex; gap:8px; flex-wrap:wrap; }
+.preset{ padding:8px 10px; border-radius:999px; cursor:pointer; background:rgba(255,255,255,0.03); color:#bfefff; border:1px dashed rgba(255,255,255,0.03); font-size:0.85rem; }
+
+/* small utility row */
+.row{ display:flex; gap:8px; align-items:center; }
+
+/* chart */
+.chart-wrap{ height:180px; }
+
+/* floating fab */
+.fab{
+  position:fixed; right:18px; bottom:110px; z-index:999;
+  background:linear-gradient(90deg,var(--zep-lime),var(--zep-blue)); color:#050018;
+  border:none; padding:12px 16px; border-radius:999px; font-weight:700; cursor:pointer;
+  box-shadow:0 12px 40px rgba(0,240,255,0.12);
+}
+
+/* footer note */
+.note{ font-size:0.85rem; opacity:0.8; margin-top:8px; color:#bfefff; }
+
+/* small helpers */
+.kv{ font-size:0.9rem; color:#bfefff; }
+.small{ font-size:0.85rem; opacity:0.85; }
+.copy{ cursor:pointer; color:var(--zep-lime); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="container" role="main">
+  <div class="header" aria-hidden="false">
+    <div class="brand">
+      <div class="logo">Z</div>
+      <div>
+        <div class="title">Zep AI — Merchants Assistant</div>
+        <div class="small">Insights, pricing, product copy & growth ideas</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="kv">Connected: <strong id="addr">Not connected</strong></div>
+      <button class="btn ghost" id="connectSim">Connect (Dev)</button>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:14px;">
+    <!-- LEFT: Chat & History -->
+    <div class="panel">
+      <div class="chat" id="chatRoot" aria-live="polite">
+        <div class="messages" id="messages"></div>
+
+        <div style="margin-top:auto;">
+          <div class="row" style="margin-bottom:8px;">
+            <div class="presets" id="presets">
+              <div class="preset" data-prompt="Suggest a price for this product: Smartphone 12 Pro, cost 180 USDT, target campus students.">Price Suggestion</div>
+              <div class="preset" data-prompt="Write 2 short marketing taglines for a campus meal deal">Taglines</div>
+              <div class="preset" data-prompt="Create a product title and short description for a design eBook pack">Product Title</div>
+              <div class="preset" data-prompt="Suggest 3 bundle ideas to increase average order value for headsets">Bundle Ideas</div>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="input" role="region" aria-label="Zep AI input">
+              <textarea id="prompt" placeholder="Ask Zep AI anything about pricing, product copy, bundles, or marketing..." rows="2"></textarea>
+            </div>
+            <button class="btn" id="sendBtn">Ask Zep AI</button>
+            <button class="btn ghost" id="clearBtn">Clear</button>
+          </div>
+
+          <div class="row" style="margin-top:8px; justify-content:space-between;">
+            <div class="small">Auto-saves locally — your conversations remain in this browser</div>
+            <div class="row small">
+              <div class="copy" id="exportBtn" title="Download conversation">⤓ Export</div>
+              <div class="copy" id="clearStorage" title="Clear saved history" style="margin-left:10px;">🗑 Clear</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT: Context, Analytics & Tools -->
+    <aside class="sidebar">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700">Store Snapshot</div>
+          <div class="small">Live</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <div style="flex:1">
+            <div class="small">Sales (24h)</div>
+            <div style="font-family:Orbitron;font-size:1.15rem;color:var(--zep-violet);">USDT <strong id="sales24">420</strong></div>
+          </div>
+          <div style="flex:1">
+            <div class="small">Likes</div>
+            <div style="font-family:Orbitron;font-size:1.15rem;color:var(--zep-blue)"><strong id="likes">318</strong></div>
+          </div>
+        </div>
+        <div class="chart-wrap" style="margin-top:10px;"><canvas id="miniChart" height="120"></canvas></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700">Quick Tools</div>
+        </div>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+          <button class="btn" id="genTitle">Generate Product Title</button>
+          <button class="btn" id="genPrice">Suggest Price</button>
+          <button class="btn" id="genBundles">Bundle Ideas</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700">Session Memory</div>
+          <div class="small">Local</div>
+        </div>
+        <div style="margin-top:10px;">
+          <div class="small">Saved prompts: <strong id="savedCount">0</strong></div>
+          <div class="note">You can later connect this module to a paid LLM for stronger results. For now Zep AI simulates helpful suggestions using merchant data and templates.</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <button class="fab" id="fabAsk">Ask Zep AI</button>
+</div>
+
+<script>
+/* ------------------------------
+   Simple simulated AI engine
+   Replace `simulateAI` with real LLM calls later.
+   ------------------------------ */
+
+const STORAGE_KEY = 'zepai_conversations_v1';
+
+function nowStr(){ return new Date().toLocaleString(); }
+
+/* Helpful templating engine for simulated responses */
+function simulateAI(prompt, context={}){
+  // quick heuristics to return useful content
+  const p = prompt.toLowerCase();
+  if(p.includes('price') || p.includes('suggest a price')){
+    // attempt to parse numeric cost and currency
+    const costMatch = prompt.match(/cost\s*[:=]?\s*(\d+\.?\d*)\s*(usdt|zac)?/i);
+    const cost = costMatch ? Number(costMatch[1]) : null;
+    const currency = (costMatch && costMatch[2]) ? costMatch[2].toUpperCase() : 'USDT';
+    const markup = 1.2 + Math.random()*0.6;
+    const suggested = cost ? (cost * markup) : (Math.round((10 + Math.random()*20) * 100)/100);
+    const reason = cost ? `Target markup ${Math.round((markup-1)*100)}% applied to cost.` : 'Using demand heuristic for campus pricing.';
+    return `💡 Price Suggestion (${currency}): **${suggested.toFixed(2)} ${currency}**\n\n${reason}\n\nTip: Offer a student bundle to increase AOV.`;
+  }
+
+  if(p.includes('title') || p.includes('product title')){
+    return `🎯 Product Title Ideas:\n1) Campus Designer eBook — Quick UX Templates\n2) Student Design Toolkit — eBook & Templates Pack\n\nShort description:\nA compact eBook bundle with templates and exercises designed for students to build portfolios quickly.`;
+  }
+
+  if(p.includes('bundle') || p.includes('bundle ideas')){
+    return `📦 Bundle Ideas:\n• Headset + Cleaning Kit — save 10% (student bundle)\n• Phone Case + Screen Protector — accessory pack (free shipping)\n• eBook + Template Pack — digital bundle (discount for likes)\n\nOffer: Use a limited-time campus coupon to drive urgency.`;
+  }
+
+  if(p.includes('tagline') || p.includes('marketing') || p.includes('blurb')){
+    return `✍️ Marketing Snippets:\n• "List. Earn. Swipe. Campus deals, on-chain." \n• "Headsets designed for study sessions — sound clarity, campus pricing."`;
+  }
+
+  // default fallback: synthesize a short analysis using context
+  const synthetic = [
+    `Here's a quick growth tip: highlight student testimonials and offer a 5% loyalty credit in ZAC for repeat purchases.`,
+    `Consider A/B testing the product title: include "Campus" or "Student" and measure likes.`,
+    `Try bundling a low-cost add-on to increase the basket size; free shipping over 10 USDT drives conversion.`
+  ];
+  return `🤖 Zep AI Quick Insight:\n${synthetic[Math.floor(Math.random()*synthetic.length)]}`;
+}
+
+/* ------------------------------
+   UI: chat, localStorage and helpers
+   ------------------------------ */
+
+const messagesEl = document.getElementById('messages');
+const promptEl = document.getElementById('prompt');
+const sendBtn = document.getElementById('sendBtn');
+const clearBtn = document.getElementById('clearBtn');
+const presetsEl = document.getElementById('presets');
+const connectSim = document.getElementById('connectSim');
+const addrEl = document.getElementById('addr');
+const exportBtn = document.getElementById('exportBtn');
+const clearStorageBtn = document.getElementById('clearStorage');
+const savedCountEl = document.getElementById('savedCount');
+const fabAsk = document.getElementById('fabAsk');
+
+// load conversations
+let conv = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+function saveConv(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(conv)); updateSavedCount(); }
+function updateSavedCount(){ savedCountEl.textContent = conv.length; }
+updateSavedCount();
+
+function renderMessages(){
+  messagesEl.innerHTML = '';
+  conv.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'msg ' + (item.role === 'user' ? 'user' : 'ai');
+    el.innerHTML = `<div style="font-size:0.75rem;opacity:0.7">${item.role==='user'?'You':'Zep AI'} • ${item.time}</div>
+                    <div style="margin-top:6px;white-space:pre-wrap">${escapeHtml(item.text)}</div>`;
+    messagesEl.appendChild(el);
+  });
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function pushMessage(role, text){
+  const entry = {role, text, time: nowStr()};
+  conv.push(entry);
+  saveConv();
+  renderMessages();
+}
+
+/* Escape to avoid HTML injection in simulated content */
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* send flow */
+async function askZep(promptText){
+  if(!promptText || !promptText.trim()) return;
+  pushMessage('user', promptText);
+  promptEl.value = '';
+  sendBtn.disabled = true;
+  // simulated thinking
+  const thinking = pushTemp('ai','Zep AI is thinking…');
+  await sleep(600 + Math.random()*800);
+  const response = simulateAI(promptText);
+  // replace temp with real
+  replaceTemp(thinking, response);
+  saveConv();
+  sendBtn.disabled = false;
+}
+
+/* helper to show a temporary message */
+function pushTemp(role, text){
+  const entry = {role, text, time: nowStr(), _temp:true};
+  conv.push(entry);
+  renderMessages();
+  return entry;
+}
+function replaceTemp(tempEntry, newText){
+  const idx = conv.indexOf(tempEntry);
+  if(idx>=0){
+    conv[idx] = {role: 'ai', text: newText, time: nowStr()};
+    renderMessages();
+  }
+}
+
+/* small helpers */
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+/* event wiring */
+sendBtn.addEventListener('click', ()=> askZep(promptEl.value));
+promptEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); askZep(promptEl.value); }});
+clearBtn.addEventListener('click', ()=>{ conv=[]; saveConv(); renderMessages(); });
+
+presetsEl.addEventListener('click', (ev)=>{
+  const p = ev.target.closest('.preset');
+  if(!p) return;
+  promptEl.value = p.dataset.prompt;
+  promptEl.focus();
+});
+
+connectSim.addEventListener('click', ()=>{
+  // simulate wallet connect
+  const demo = '0xABCD...1234';
+  addrEl.textContent = demo;
+  connectSim.textContent = 'Connected';
+  connectSim.disabled = true;
+});
+
+/* export / clear storage */
+exportBtn.addEventListener('click', ()=>{
+  const data = JSON.stringify(conv, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'zepai_conversation.json'; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+});
+clearStorageBtn.addEventListener('click', ()=>{
+  if(confirm('Clear saved Zep AI conversation history?')){ conv=[]; saveConv(); renderMessages(); }
+});
+
+/* quick tool buttons */
+document.getElementById('genTitle').addEventListener('click', ()=> {
+  const sample = 'Create a product title and 1-line description for a smartphone aimed at students';
+  promptEl.value = sample; askZep(sample);
+});
+document.getElementById('genPrice').addEventListener('click', ()=> {
+  const sample = 'Suggest a price for "Smartphone 12 Pro" with cost 180 USDT for campus students';
+  promptEl.value = sample; askZep(sample);
+});
+document.getElementById('genBundles').addEventListener('click', ()=> {
+  const sample = 'Suggest 3 bundle ideas to increase sales for headphones';
+  promptEl.value = sample; askZep(sample);
+});
+
+fabAsk.addEventListener('click', ()=> {
+  window.scrollTo({top:0, behavior:'smooth'});
+  promptEl.focus();
+});
+
+/* initialize UI */
+renderMessages();
+
+/* populate with 1 starter message if empty */
+if(conv.length===0){
+  pushMessage('ai', "👋 Hi — I'm Zep AI. Ask for pricing help, product titles, bundle ideas, or marketing snippets. Try the presets or type a question and press Ask Zep AI.");
+}
+
+/* Sales mini-chart */
+const miniCtx = document.getElementById('miniChart').getContext('2d');
+const miniChart = new Chart(miniCtx, {
+  type:'line',
+  data:{
+    labels: Array.from({length:12},(_,i)=>`${i+1}h`),
+    datasets:[{ data: Array.from({length:12},()=>Math.floor(Math.random()*30)+10),
+      borderColor: 'rgba(0,240,255,0.95)', backgroundColor:'rgba(0,240,255,0.12)', fill:true, tension:0.3 }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+    scales:{ x:{ ticks:{ color:'#bfefff'}, grid:{ color:'rgba(255,255,255,0.04)'}}, y:{ ticks:{ color:'#bfefff'}, grid:{ color:'rgba(255,255,255,0.04)'}}}
+  }
+});
+
+/* some liveliness: simulate engagement updates */
+setInterval(()=> {
+  const el = document.getElementById('likes');
+  const cur = Number(el.textContent || 0);
+  const next = cur + (Math.random()>0.8?1:0);
+  el.textContent = next;
+  document.getElementById('sales24').textContent = Math.max(80, Math.round(Number(document.getElementById('sales24').textContent || 0) + (Math.random()*12-4)));
+  miniChart.data.datasets[0].data.shift();
+  miniChart.data.datasets[0].data.push(Math.floor(Math.random()*30)+10);
+  miniChart.update();
+}, 4000);
+
+</script>
+</body>
+</html>
