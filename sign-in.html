@@ -40,8 +40,9 @@
       width: 100%;
       padding: 2rem;
       text-align: center;
-      transition: 0.3s;
       animation: fadeIn 1s ease-in-out;
+      z-index: 10;
+      position: relative;
     }
 
     @keyframes fadeIn {
@@ -81,8 +82,9 @@
     }
 
     .coming-soon {
-      opacity: 0.6;
+      opacity: 0.4;
       cursor: not-allowed;
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .divider {
@@ -105,11 +107,47 @@
       transition: 0.3s;
     }
 
-    .footer a:hover {
-      color: #9c4dff;
-    }
+    .footer a:hover { color: #9c4dff; }
 
     .hidden { display: none; }
+
+    /* ===== Loading Shimmer Overlay ===== */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(20px);
+      background: rgba(10, 0, 30, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .shimmer {
+      width: 180px;
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #00f0ff, #9c4dff, #00f0ff);
+      background-size: 200%;
+      animation: shimmer 1.5s linear infinite;
+      margin-top: 1rem;
+    }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to { background-position: -200% 0; }
+    }
+
+    .loading-text {
+      font-family: 'Orbitron';
+      font-size: 1.2rem;
+      color: #9cfaff;
+      text-shadow: 0 0 10px #00f0ff;
+    }
 
     /* ===== Zep AI Bubble ===== */
     .ai-chat-btn {
@@ -128,59 +166,10 @@
       z-index: 100;
       animation: pulseAI 2s ease-in-out infinite alternate;
     }
+
     @keyframes pulseAI {
-      0%{box-shadow:0 0 12px rgba(0,240,255,0.4);}
-      100%{box-shadow:0 0 30px rgba(156,77,255,0.8);}
-    }
-    .ai-chatbox {
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 280px;
-      background: rgba(10,10,25,0.95);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 0 25px rgba(0,240,255,0.25);
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      z-index: 200;
-    }
-    .ai-header {
-      background: linear-gradient(90deg, #00f0ff, #9c4dff);
-      color: #050018;
-      font-family: 'Orbitron';
-      font-weight: 700;
-      text-align: center;
-      padding: 8px;
-    }
-    .ai-messages {
-      flex: 1;
-      max-height: 220px;
-      overflow-y: auto;
-      padding: 10px;
-      color: #fff;
-      font-size: 0.85rem;
-    }
-    .ai-input {
-      display: flex;
-      border-top: 1px solid rgba(255,255,255,0.1);
-    }
-    .ai-input input {
-      flex: 1;
-      border: none;
-      background: rgba(255,255,255,0.05);
-      color: #fff;
-      padding: 8px;
-      outline: none;
-    }
-    .ai-input button {
-      border: none;
-      background: linear-gradient(90deg, #00f0ff, #9c4dff);
-      color: #050018;
-      font-weight: 700;
-      padding: 8px 14px;
-      cursor: pointer;
+      0% { box-shadow: 0 0 12px rgba(0,240,255,0.4); }
+      100% { box-shadow: 0 0 30px rgba(156,77,255,0.8); }
     }
   </style>
 </head>
@@ -192,13 +181,14 @@
     <!-- Step 1: Choose Role -->
     <div id="roleSection">
       <p class="mb-3 text-cyan-200">Select your access type</p>
-      <button id="studentBtn" class="wallet-btn" onclick="selectRole('student')">🧑‍🎓 Student</button>
-      <button id="merchantBtn" class="wallet-btn" onclick="selectRole('merchant')">💼 Merchant</button>
+      <button class="wallet-btn" onclick="selectRole('student')">🧑‍🎓 Student</button>
+      <button class="wallet-btn" onclick="selectRole('merchant')">💼 Merchant</button>
     </div>
 
     <!-- Step 2: Wallet Connect -->
     <div id="walletSection" class="hidden">
       <div class="divider">Connect your wallet</div>
+
       <button class="wallet-btn" id="connectMetaMask">
         <i class="fa-brands fa-ethereum"></i> Connect MetaMask
       </button>
@@ -207,8 +197,8 @@
         <i class="fa-brands fa-bitcoin"></i> Connect Coinbase Wallet
       </button>
 
-      <div class="divider">or continue with phone</div>
-      <button class="wallet-btn coming-soon">
+      <div class="divider">Phone login disabled</div>
+      <button class="wallet-btn coming-soon" disabled>
         <i class="fa-solid fa-mobile-screen"></i> Connect Phone (Coming Soon)
       </button>
 
@@ -222,31 +212,31 @@
     </div>
   </div>
 
+  <!-- Loading Shimmer -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-text">Loading your Zep Dashboard...</div>
+    <div class="shimmer"></div>
+  </div>
+
   <!-- Zep AI Chat Bubble -->
   <button class="ai-chat-btn" onclick="toggleAI()">💬 Ask Zep AI</button>
-  <div class="ai-chatbox" id="aiChat">
-    <div class="ai-header">Zep AI</div>
-    <div class="ai-messages" id="aiMessages">
-      <p>🤖 Hey there! Select your role first (Student or Merchant) before connecting your wallet.</p>
-    </div>
-    <div class="ai-input">
-      <input type="text" id="aiInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter')sendAI()">
-      <button onclick="sendAI()">Send</button>
-    </div>
-  </div>
 
   <script>
     let selectedRole = null;
 
-    // ===== Auto Login Persistence =====
+    // === Auto Login Persistence ===
     window.addEventListener('load', () => {
       const user = JSON.parse(localStorage.getItem('zepUser'));
       if (user && user.wallet && user.role) {
-        if (user.role === 'merchant') window.location.href = 'merchants-dashboard.html';
-        else if (user.role === 'student') window.location.href = 'student-dashboard.html';
+        showLoading();
+        setTimeout(() => {
+          if (user.role === 'merchant') window.location.href = 'merchants-dashboard.html';
+          else window.location.href = 'student-dashboard.html';
+        }, 1500);
       }
     });
 
+    // === Role Selection ===
     function selectRole(role) {
       selectedRole = role;
       document.getElementById("roleSection").classList.add("hidden");
@@ -254,81 +244,62 @@
       document.getElementById("loginStatus").innerHTML = `🔹 Selected: <b>${role.toUpperCase()}</b> — Now connect your wallet.`;
     }
 
-    // Connect MetaMask
+    // === Loading shimmer ===
+    function showLoading() {
+      const overlay = document.getElementById("loadingOverlay");
+      overlay.style.display = "flex";
+    }
+
+    // === MetaMask Connection ===
     document.getElementById("connectMetaMask").addEventListener("click", async () => {
+      if (!selectedRole) return alert("Please select a role first!");
       if (!window.ethereum) return alert("Please install MetaMask to continue.");
+
       try {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.send("eth_requestAccounts", []);
-        const walletAddress = accounts[0];
-        localStorage.setItem("zepUser", JSON.stringify({ wallet: walletAddress, provider: "metamask", role: selectedRole }));
-        document.getElementById("loginStatus").innerHTML = `✅ MetaMask connected: ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
-        setTimeout(redirectUser, 1000);
-      } catch (err) { alert("Connection failed."); console.error(err); }
+        const wallet = accounts[0];
+        localStorage.setItem("zepUser", JSON.stringify({ wallet, provider: "metamask", role: selectedRole }));
+        document.getElementById("loginStatus").innerHTML = `✅ MetaMask connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+        showLoading();
+        setTimeout(redirectUser, 1500);
+      } catch (err) {
+        console.error(err);
+        alert("MetaMask connection failed.");
+      }
     });
 
-    // Connect Coinbase
+    // === Coinbase Connection ===
     document.getElementById("connectCoinbase").addEventListener("click", async () => {
-      if (!window.ethereum || !window.ethereum.providers) {
-        alert("Please install Coinbase Wallet or MetaMask to continue.");
-        return;
-      }
+      if (!selectedRole) return alert("Please select a role first!");
+      if (!window.ethereum || !window.ethereum.providers) return alert("Coinbase Wallet not detected.");
+
       const coinbaseProvider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
-      if (!coinbaseProvider) {
-        alert("No Coinbase provider found. Open in Coinbase Wallet app.");
-        return;
-      }
+      if (!coinbaseProvider) return alert("Open in Coinbase Wallet app or extension.");
+
       try {
         const provider = new ethers.BrowserProvider(coinbaseProvider);
         const accounts = await provider.send("eth_requestAccounts", []);
-        const walletAddress = accounts[0];
-        localStorage.setItem("zepUser", JSON.stringify({ wallet: walletAddress, provider: "coinbase", role: selectedRole }));
-        document.getElementById("loginStatus").innerHTML = `✅ Coinbase connected: ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
-        setTimeout(redirectUser, 1000);
+        const wallet = accounts[0];
+        localStorage.setItem("zepUser", JSON.stringify({ wallet, provider: "coinbase", role: selectedRole }));
+        document.getElementById("loginStatus").innerHTML = `✅ Coinbase connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+        showLoading();
+        setTimeout(redirectUser, 1500);
       } catch (err) {
         console.error(err);
         alert("Coinbase connection failed.");
       }
     });
 
+    // === Redirect ===
     function redirectUser() {
       if (selectedRole === "merchant") window.location.href = "merchants-dashboard.html";
       else if (selectedRole === "student") window.location.href = "student-dashboard.html";
-      else alert("Please select a role first.");
     }
 
-    // ===== Zep AI Chat =====
+    // === Zep AI Toggle ===
     function toggleAI() {
-      const ai = document.getElementById("aiChat");
-      ai.style.display = ai.style.display === "flex" ? "none" : "flex";
-    }
-
-    function sendAI() {
-      const input = document.getElementById("aiInput");
-      const msg = input.value.trim();
-      if (!msg) return;
-      const box = document.getElementById("aiMessages");
-      const userMsg = document.createElement("p");
-      userMsg.textContent = "🧑 " + msg;
-      box.appendChild(userMsg);
-      input.value = "";
-      const aiReply = document.createElement("p");
-      aiReply.textContent = "🤖 ...thinking";
-      box.appendChild(aiReply);
-      setTimeout(() => {
-        aiReply.textContent = generateAIResponse(msg);
-        box.scrollTop = box.scrollHeight;
-      }, 800);
-    }
-
-    function generateAIResponse(q) {
-      const lower = q.toLowerCase();
-      if (lower.includes("wallet")) return "💡 Choose your role, then connect via MetaMask or Coinbase Wallet — both work on Base.";
-      if (lower.includes("metamask")) return "🦊 Tap 'Connect MetaMask' and approve the connection request to authenticate.";
-      if (lower.includes("coinbase")) return "💼 Tap 'Connect Coinbase Wallet' if you're using the Coinbase app or extension.";
-      if (lower.includes("student")) return "🎓 Students use Zep Swipe to pay, earn, and manage ZAC rewards.";
-      if (lower.includes("merchant")) return "💼 Merchants use Zep Swipe to accept ZAC payments and grow their digital sales.";
-      return "🤖 I'm Zep AI — your onboarding guide. Ask me about connecting wallets or Zep Swipe accounts!";
+      alert("🤖 Zep AI coming soon inside the main dashboard!");
     }
   </script>
 </body>
