@@ -21,7 +21,6 @@ body {
   min-height: 100vh;
   padding: 2rem;
 }
-
 .glass-card {
   background: rgba(255,255,255,0.08);
   border-radius: 1.5rem;
@@ -32,10 +31,7 @@ body {
   max-width: 400px;
   width: 100%;
   text-align: center;
-  transition: 0.3s;
 }
-.glass-card:hover { box-shadow: 0 0 45px rgba(156,77,255,0.45); }
-
 .title {
   font-family: 'Orbitron', sans-serif;
   font-size: 1.8rem;
@@ -45,7 +41,6 @@ body {
   text-shadow: 0 0 20px rgba(156,77,255,0.5);
   margin-bottom: 1.5rem;
 }
-
 .wallet-btn {
   width: 100%;
   padding: 0.8rem;
@@ -65,7 +60,6 @@ body {
   background: linear-gradient(90deg, #9c4dff33, #ff00ff33);
   box-shadow: 0 0 15px rgba(156,77,255,0.25);
 }
-
 .footer {
   margin-top: 1.5rem;
   text-align: center;
@@ -73,7 +67,6 @@ body {
 }
 .footer a { margin: 0 6px; color: #d18fff; }
 .footer a:hover { color: #ff00ff; }
-
 .loading {
   display: none;
   position: fixed;
@@ -112,6 +105,7 @@ body {
 <script>
 const BASE_CHAIN_ID = "0x2105"; // Base Mainnet
 
+// Auto reconnect
 window.addEventListener('load', () => {
   const user = JSON.parse(localStorage.getItem("zepUserMerchant"));
   if (user && user.wallet) {
@@ -120,37 +114,57 @@ window.addEventListener('load', () => {
   }
 });
 
-// MetaMask
+// === MetaMask Login ===
 document.getElementById("connectMetaMask").addEventListener("click", async () => {
   if (!window.ethereum) return alert("Install MetaMask to continue.");
   try {
+    const chainId = await window.ethereum.request({ method: "eth_chainId" });
+    if (chainId !== BASE_CHAIN_ID) {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: BASE_CHAIN_ID }],
+      });
+    }
+
     const provider = new ethers.BrowserProvider(window.ethereum);
     const accounts = await provider.send("eth_requestAccounts", []);
     const wallet = accounts[0];
-    localStorage.setItem("zepUserMerchant", JSON.stringify({ wallet, provider:"metamask", role:"merchant" }));
-    document.getElementById("status").innerText = `Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+    if (!wallet) throw new Error("No wallet address returned.");
+
+    localStorage.setItem("zepUserMerchant", JSON.stringify({ wallet, provider: "metamask", role: "merchant" }));
+    document.getElementById("status").innerText = `✅ Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
     document.getElementById("loading").style.display = "block";
-    setTimeout(() => window.location.href = "merchants-dashboard.html", 1000);
-  } catch (err) { alert("MetaMask connection failed."); }
+    setTimeout(() => window.location.href = "merchants-dashboard.html", 1200);
+  } catch (err) {
+    console.error(err);
+    alert("⚠️ Connection failed. Make sure MetaMask is unlocked and on Base Mainnet.");
+  }
 });
 
-// Coinbase
+// === Coinbase Login ===
 document.getElementById("connectCoinbase").addEventListener("click", async () => {
-  if (!window.ethereum || !window.ethereum.providers)
-    return alert("Please use Coinbase Wallet app or extension.");
-
-  const coinbaseProvider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
-  if (!coinbaseProvider) return alert("No Coinbase Wallet detected.");
+  if (!window.ethereum) return alert("Please open in Coinbase Wallet app or extension.");
+  const coinbaseProvider = window.ethereum.providers?.find(p => p.isCoinbaseWallet);
+  const provider = coinbaseProvider ? new ethers.BrowserProvider(coinbaseProvider) : new ethers.BrowserProvider(window.ethereum);
 
   try {
-    const provider = new ethers.BrowserProvider(coinbaseProvider);
+    const chainId = await provider.send("eth_chainId", []);
+    if (chainId !== BASE_CHAIN_ID) {
+      await provider.send("wallet_switchEthereumChain", [{ chainId: BASE_CHAIN_ID }]);
+    }
+
     const accounts = await provider.send("eth_requestAccounts", []);
     const wallet = accounts[0];
-    localStorage.setItem("zepUserMerchant", JSON.stringify({ wallet, provider:"coinbase", role:"merchant" }));
-    document.getElementById("status").innerText = `Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+    if (!wallet) throw new Error("No wallet returned.");
+
+    localStorage.setItem("zepUserMerchant", JSON.stringify({ wallet, provider: "coinbase", role: "merchant" }));
+    document.getElementById("status").innerText = `✅ Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
     document.getElementById("loading").style.display = "block";
-    setTimeout(() => window.location.href = "merchants-dashboard.html", 1000);
-  } catch (err) { alert("Coinbase connection failed."); }
+    setTimeout(() => window.location.href = "merchants-dashboard.html", 1200);
+  } catch (err) {
+    console.error(err);
+    alert("⚠️ Coinbase Wallet connection failed. Make sure you're on Base Mainnet.");
+  }
 });
 </script>
 </body>
