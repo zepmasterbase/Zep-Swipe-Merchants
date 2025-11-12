@@ -49,10 +49,6 @@
       to {opacity: 1; transform: translateY(0);}
     }
 
-    .glass-card:hover {
-      box-shadow: 0 0 40px rgba(156, 77, 255, 0.4);
-    }
-
     .glow-title {
       font-family: 'Orbitron', sans-serif;
       background: linear-gradient(90deg, #00f0ff, #9c4dff);
@@ -112,6 +108,8 @@
     .footer a:hover {
       color: #9c4dff;
     }
+
+    .hidden { display: none; }
 
     /* ===== Zep AI Bubble ===== */
     .ai-chat-btn {
@@ -191,29 +189,31 @@
   <div class="glass-card">
     <h1 class="glow-title">Zep Swipe Login</h1>
 
-    <!-- Wallet Connect -->
-    <button class="wallet-btn" id="connectMetaMask">
-      <i class="fa-brands fa-ethereum"></i> Connect MetaMask
-    </button>
-
-    <button class="wallet-btn" id="connectCoinbase">
-      <i class="fa-brands fa-bitcoin"></i> Connect Coinbase Wallet
-    </button>
-
-    <div class="divider">or continue with phone</div>
-
-    <button class="wallet-btn coming-soon">
-      <i class="fa-solid fa-mobile-screen"></i> Connect Phone (Coming Soon)
-    </button>
-
-    <div class="divider">Select Access Type</div>
-
-    <div class="flex justify-between">
+    <!-- Step 1: Choose Role -->
+    <div id="roleSection">
+      <p class="mb-3 text-cyan-200">Select your access type</p>
       <button id="studentBtn" class="wallet-btn" onclick="selectRole('student')">🧑‍🎓 Student</button>
       <button id="merchantBtn" class="wallet-btn" onclick="selectRole('merchant')">💼 Merchant</button>
     </div>
 
-    <p id="loginStatus" class="mt-4 text-sm text-cyan-300"></p>
+    <!-- Step 2: Wallet Connect -->
+    <div id="walletSection" class="hidden">
+      <div class="divider">Connect your wallet</div>
+      <button class="wallet-btn" id="connectMetaMask">
+        <i class="fa-brands fa-ethereum"></i> Connect MetaMask
+      </button>
+
+      <button class="wallet-btn" id="connectCoinbase">
+        <i class="fa-brands fa-bitcoin"></i> Connect Coinbase Wallet
+      </button>
+
+      <div class="divider">or continue with phone</div>
+      <button class="wallet-btn coming-soon">
+        <i class="fa-solid fa-mobile-screen"></i> Connect Phone (Coming Soon)
+      </button>
+
+      <p id="loginStatus" class="mt-4 text-sm text-cyan-300"></p>
+    </div>
 
     <div class="footer">
       <a href="https://x.com/ZepSwipe" target="_blank"><i class="fab fa-x-twitter"></i></a>
@@ -227,7 +227,7 @@
   <div class="ai-chatbox" id="aiChat">
     <div class="ai-header">Zep AI</div>
     <div class="ai-messages" id="aiMessages">
-      <p>🤖 Hi! I’m Zep AI. Need help connecting your wallet or logging in?</p>
+      <p>🤖 Hey there! Select your role first (Student or Merchant) before connecting your wallet.</p>
     </div>
     <div class="ai-input">
       <input type="text" id="aiInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter')sendAI()">
@@ -238,26 +238,36 @@
   <script>
     let selectedRole = null;
 
+    // ===== Auto Login Persistence =====
+    window.addEventListener('load', () => {
+      const user = JSON.parse(localStorage.getItem('zepUser'));
+      if (user && user.wallet && user.role) {
+        if (user.role === 'merchant') window.location.href = 'merchants-dashboard.html';
+        else if (user.role === 'student') window.location.href = 'student-dashboard.html';
+      }
+    });
+
     function selectRole(role) {
       selectedRole = role;
-      document.getElementById("studentBtn").classList.toggle("active", role === "student");
-      document.getElementById("merchantBtn").classList.toggle("active", role === "merchant");
+      document.getElementById("roleSection").classList.add("hidden");
+      document.getElementById("walletSection").classList.remove("hidden");
+      document.getElementById("loginStatus").innerHTML = `🔹 Selected: <b>${role.toUpperCase()}</b> — Now connect your wallet.`;
     }
 
-    // MetaMask Connect
+    // Connect MetaMask
     document.getElementById("connectMetaMask").addEventListener("click", async () => {
       if (!window.ethereum) return alert("Please install MetaMask to continue.");
       try {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.send("eth_requestAccounts", []);
         const walletAddress = accounts[0];
-        localStorage.setItem("zepUser", JSON.stringify({ wallet: walletAddress, provider: "metamask" }));
-        document.getElementById("loginStatus").innerHTML = `✅ Connected: ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
+        localStorage.setItem("zepUser", JSON.stringify({ wallet: walletAddress, provider: "metamask", role: selectedRole }));
+        document.getElementById("loginStatus").innerHTML = `✅ MetaMask connected: ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
         setTimeout(redirectUser, 1000);
       } catch (err) { alert("Connection failed."); console.error(err); }
     });
 
-    // Coinbase Connect
+    // Connect Coinbase
     document.getElementById("connectCoinbase").addEventListener("click", async () => {
       if (!window.ethereum || !window.ethereum.providers) {
         alert("Please install Coinbase Wallet or MetaMask to continue.");
@@ -272,7 +282,7 @@
         const provider = new ethers.BrowserProvider(coinbaseProvider);
         const accounts = await provider.send("eth_requestAccounts", []);
         const walletAddress = accounts[0];
-        localStorage.setItem("zepUser", JSON.stringify({ wallet: walletAddress, provider: "coinbase" }));
+        localStorage.setItem("zepUser", JSON.stringify({ wallet: walletAddress, provider: "coinbase", role: selectedRole }));
         document.getElementById("loginStatus").innerHTML = `✅ Coinbase connected: ${walletAddress.slice(0,6)}...${walletAddress.slice(-4)}`;
         setTimeout(redirectUser, 1000);
       } catch (err) {
@@ -282,12 +292,12 @@
     });
 
     function redirectUser() {
-      if (!selectedRole) return alert("Please select Student or Merchant before continuing.");
       if (selectedRole === "merchant") window.location.href = "merchants-dashboard.html";
-      else window.location.href = "student-dashboard.html";
+      else if (selectedRole === "student") window.location.href = "student-dashboard.html";
+      else alert("Please select a role first.");
     }
 
-    // ===== Zep AI Chat Logic =====
+    // ===== Zep AI Chat =====
     function toggleAI() {
       const ai = document.getElementById("aiChat");
       ai.style.display = ai.style.display === "flex" ? "none" : "flex";
@@ -313,12 +323,12 @@
 
     function generateAIResponse(q) {
       const lower = q.toLowerCase();
-      if (lower.includes("wallet")) return "💡 You can connect via MetaMask or Coinbase Wallet — both supported on Base network.";
-      if (lower.includes("metamask")) return "🦊 Tap 'Connect MetaMask' and approve the connection request.";
-      if (lower.includes("coinbase")) return "💼 Use Coinbase Wallet on Base for instant ZAC access.";
-      if (lower.includes("zep") || lower.includes("swipe")) return "🚀 Zep Swipe helps merchants and students transact with ZAC — fast, low-cost digital payments on Base.";
-      if (lower.includes("help")) return "🤝 I can assist you with connecting wallets, logging in, and understanding Zep Swipe.";
-      return "🤖 I’m Zep AI — your onboarding guide. Try asking about 'wallet', 'MetaMask', or 'Zep Swipe'.";
+      if (lower.includes("wallet")) return "💡 Choose your role, then connect via MetaMask or Coinbase Wallet — both work on Base.";
+      if (lower.includes("metamask")) return "🦊 Tap 'Connect MetaMask' and approve the connection request to authenticate.";
+      if (lower.includes("coinbase")) return "💼 Tap 'Connect Coinbase Wallet' if you're using the Coinbase app or extension.";
+      if (lower.includes("student")) return "🎓 Students use Zep Swipe to pay, earn, and manage ZAC rewards.";
+      if (lower.includes("merchant")) return "💼 Merchants use Zep Swipe to accept ZAC payments and grow their digital sales.";
+      return "🤖 I'm Zep AI — your onboarding guide. Ask me about connecting wallets or Zep Swipe accounts!";
     }
   </script>
 </body>
