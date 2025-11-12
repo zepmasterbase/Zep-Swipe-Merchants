@@ -148,29 +148,6 @@
       color: #9cfaff;
       text-shadow: 0 0 10px #00f0ff;
     }
-
-    /* ===== Zep AI Bubble ===== */
-    .ai-chat-btn {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background: linear-gradient(90deg, #00f0ff, #9c4dff);
-      color: #050018;
-      font-family: 'Orbitron';
-      border: none;
-      border-radius: 999px;
-      padding: 12px 20px;
-      cursor: pointer;
-      box-shadow: 0 0 25px rgba(0,240,255,0.4);
-      font-weight: 700;
-      z-index: 100;
-      animation: pulseAI 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulseAI {
-      0% { box-shadow: 0 0 12px rgba(0,240,255,0.4); }
-      100% { box-shadow: 0 0 30px rgba(156,77,255,0.8); }
-    }
   </style>
 </head>
 
@@ -218,21 +195,27 @@
     <div class="shimmer"></div>
   </div>
 
-  <!-- Zep AI Chat Bubble -->
-  <button class="ai-chat-btn" onclick="toggleAI()">💬 Ask Zep AI</button>
-
   <script>
     let selectedRole = null;
 
     // === Auto Login Persistence ===
-    window.addEventListener('load', () => {
+    window.addEventListener('load', async () => {
       const user = JSON.parse(localStorage.getItem('zepUser'));
       if (user && user.wallet && user.role) {
-        showLoading();
-        setTimeout(() => {
-          if (user.role === 'merchant') window.location.href = 'merchants-dashboard.html';
-          else window.location.href = 'student-dashboard.html';
-        }, 1500);
+        try {
+          if (window.ethereum) {
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            const accounts = await provider.send("eth_accounts", []);
+            if (accounts.includes(user.wallet)) {
+              showLoading();
+              setTimeout(() => {
+                if (user.role === 'merchant') window.location.href = 'merchants-dashboard.html';
+                else window.location.href = 'student-dashboard.html';
+              }, 1500);
+              return;
+            }
+          }
+        } catch (err) { console.warn("Auto-login failed", err); }
       }
     });
 
@@ -244,47 +227,46 @@
       document.getElementById("loginStatus").innerHTML = `🔹 Selected: <b>${role.toUpperCase()}</b> — Now connect your wallet.`;
     }
 
-    // === Loading shimmer ===
     function showLoading() {
       const overlay = document.getElementById("loadingOverlay");
       overlay.style.display = "flex";
     }
 
-    // === MetaMask Connection ===
+    // === MetaMask Connect ===
     document.getElementById("connectMetaMask").addEventListener("click", async () => {
       if (!selectedRole) return alert("Please select a role first!");
-      if (!window.ethereum) return alert("Please install MetaMask to continue.");
+      if (!window.ethereum) return alert("Please install MetaMask.");
 
       try {
         const provider = new ethers.BrowserProvider(window.ethereum);
         const accounts = await provider.send("eth_requestAccounts", []);
         const wallet = accounts[0];
         localStorage.setItem("zepUser", JSON.stringify({ wallet, provider: "metamask", role: selectedRole }));
-        document.getElementById("loginStatus").innerHTML = `✅ MetaMask connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+        document.getElementById("loginStatus").innerHTML = `✅ Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
         showLoading();
-        setTimeout(redirectUser, 1500);
+        setTimeout(() => redirectUser(selectedRole), 1200);
       } catch (err) {
         console.error(err);
         alert("MetaMask connection failed.");
       }
     });
 
-    // === Coinbase Connection ===
+    // === Coinbase Connect ===
     document.getElementById("connectCoinbase").addEventListener("click", async () => {
       if (!selectedRole) return alert("Please select a role first!");
-      if (!window.ethereum || !window.ethereum.providers) return alert("Coinbase Wallet not detected.");
+      if (!window.ethereum || !window.ethereum.providers) return alert("Coinbase Wallet not found.");
 
       const coinbaseProvider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
-      if (!coinbaseProvider) return alert("Open in Coinbase Wallet app or extension.");
+      if (!coinbaseProvider) return alert("Open in Coinbase Wallet app.");
 
       try {
         const provider = new ethers.BrowserProvider(coinbaseProvider);
         const accounts = await provider.send("eth_requestAccounts", []);
         const wallet = accounts[0];
         localStorage.setItem("zepUser", JSON.stringify({ wallet, provider: "coinbase", role: selectedRole }));
-        document.getElementById("loginStatus").innerHTML = `✅ Coinbase connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+        document.getElementById("loginStatus").innerHTML = `✅ Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
         showLoading();
-        setTimeout(redirectUser, 1500);
+        setTimeout(() => redirectUser(selectedRole), 1200);
       } catch (err) {
         console.error(err);
         alert("Coinbase connection failed.");
@@ -292,14 +274,9 @@
     });
 
     // === Redirect ===
-    function redirectUser() {
-      if (selectedRole === "merchant") window.location.href = "merchants-dashboard.html";
-      else if (selectedRole === "student") window.location.href = "student-dashboard.html";
-    }
-
-    // === Zep AI Toggle ===
-    function toggleAI() {
-      alert("🤖 Zep AI coming soon inside the main dashboard!");
+    function redirectUser(role) {
+      if (role === "merchant") window.location.href = "merchants-dashboard.html";
+      else if (role === "student") window.location.href = "student-dashboard.html";
     }
   </script>
 </body>
