@@ -1,476 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zep Swipe — Merchant Dashboard</title>
 
-<!-- Fonts & libs -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Ethers -->
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
-:root{
-  --zep-blue:#00f0ff;
-  --zep-violet:#9c4dff;
-  --zep-lime:#a6ff00;
-  --glass:rgba(255,255,255,0.06);
-  --bg:radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
-  --muted: rgba(255,255,255,0.8);
+body {
+  font-family: "Poppins", sans-serif;
+  background: radial-gradient(circle at 20% 20%, #050016, #000010, #0a001c);
+  color: #fff;
+  min-height: 100vh;
+  padding-bottom: 4rem;
 }
-*{box-sizing:border-box}
-html,body{height:100%; margin:0; font-family:'Poppins',sans-serif; background:var(--bg); color:#fff;}
-.container{max-width:1100px;margin:0 auto;padding:18px;}
-
-/* header */
-.header{
-  display:flex; align-items:center; justify-content:space-between; gap:12px;
-  background: rgba(255,255,255,0.06); padding:12px 16px; border-radius:12px;
-  backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 6px 30px rgba(0,240,255,0.06);
+.card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(18px);
+  border-radius: 1.2rem;
+  padding: 1.4rem;
+  box-shadow: 0 0 22px rgba(0,240,255,0.15);
 }
-.brand{
-  font-family:'Orbitron'; font-weight:700; font-size:1.25rem;
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  text-shadow:0 0 18px rgba(0,240,255,0.25);
+.neon-text {
+  font-family: Orbitron;
+  background: linear-gradient(90deg,#00f0ff,#9c4dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-.header-right{display:flex; gap:10px; align-items:center;}
-.wallet-chip{
-  background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02));
-  border:1px solid rgba(255,255,255,0.06); padding:8px 12px; border-radius:999px;
-  font-family:'Orbitron'; color:#bfefff; font-size:.95rem;
+.nav-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
 }
-
-/* layout */
-.grid{
-  display:grid; grid-template-columns: 1fr 360px; gap:18px; margin-top:18px;
-}
-@media (max-width:980px){ .grid{ grid-template-columns:1fr; } }
-
-/* left column */
-.left-col{display:flex; flex-direction:column; gap:16px;}
-
-/* glass card */
-.card{
-  background:var(--glass); border-radius:14px; padding:18px; border:1px solid rgba(255,255,255,0.08);
-  box-shadow:0 10px 30px rgba(0,240,255,0.05); backdrop-filter: blur(12px);
-}
-
-/* top balances */
-.bal-row{display:flex; gap:12px; align-items:stretch;}
-.bal {
-  flex:1; border-radius:12px; padding:14px; text-align:left;
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.04);
-}
-.bal h3{margin:0 0 6px 0; font-family:'Orbitron'; font-size:0.95rem; color:#cff8ff;}
-.bal .big{
-  font-family:'Orbitron'; font-size:1.6rem; margin-top:6px;
-  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  text-shadow:0 0 8px rgba(0,240,255,0.12);
-}
-
-/* mini-grid placeholder actions */
-.actions-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px;}
-.action{
-  border-radius:10px; padding:10px; text-align:center; font-weight:600;
-  background:linear-gradient(90deg, rgba(0,240,255,0.06), rgba(156,77,255,0.03));
-  border:1px solid rgba(255,255,255,0.04);
-  cursor:pointer; transition:transform .18s, box-shadow .18s;
-}
-.action:hover{ transform:translateY(-4px); box-shadow:0 10px 26px rgba(0,240,255,0.06); }
-
-/* sales chart */
-.chart-wrap{height:200px}
-
-/* right column */
-.right-col{display:flex; flex-direction:column; gap:16px;}
-.profile{
-  display:flex; gap:12px; align-items:center;
-}
-.avatar{width:64px; height:64px; border-radius:12px; object-fit:cover; border:2px solid var(--zep-blue); box-shadow:0 6px 18px rgba(0,240,255,0.06);}
-.profile .meta{flex:1}
-.profile h4{margin:0; font-family:'Orbitron'; font-size:1.05rem;}
-.profile p{margin:2px 0 0 0; opacity:.8; font-size:0.9rem}
-
-/* zep ai small */
-.zep-ai{padding:12px; border-radius:12px; display:flex; gap:10px; align-items:flex-start;}
-.zep-ai .bubble{flex:1}
-.zep-ai button{background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet)); color:#050018; border:none; padding:10px 12px; border-radius:10px; font-weight:700; cursor:pointer}
-
-/* footer quick links */
-.quick-links{display:flex; flex-direction:column; gap:8px;}
-.quick-links a{display:block; padding:10px; border-radius:10px; text-decoration:none; color:#050018; background:linear-gradient(90deg,var(--zep-lime),var(--zep-blue)); font-weight:700; text-align:center;}
-
-/* small text */
-.note{font-size:0.9rem; opacity:.85;}
-
-/* logout */
-.logout-btn{background:none;border:1px solid rgba(255,255,255,0.06); color:#fff; padding:8px 12px; border-radius:10px; cursor:pointer}
-
-/* responsive tweaks */
-@media (max-width:560px){
-  .actions-grid{grid-template-columns:repeat(2,1fr);}
-  .grid{gap:12px}
+.nav-btn:hover {
+  background: linear-gradient(90deg,#00f0ff33,#9c4dff33);
+  transform: scale(1.02);
 }
 </style>
 </head>
+
 <body>
-<div class="container">
-  <header class="header">
-    <div class="brand">Zep Swipe Merchants</div>
-    <div class="header-right">
-      <div id="networkBadge" class="note" style="opacity:.9">Network: <strong id="networkName">—</strong></div>
-      <div id="walletChip" class="wallet-chip">Not connected</div>
-      <button class="logout-btn" id="logoutBtn" title="Sign out">Logout</button>
+
+<!-- Header -->
+<div class="flex justify-between items-center px-5 py-4">
+  <h1 class="text-2xl neon-text font-bold">Zep Swipe Merchant</h1>
+
+  <button onclick="logout()" class="text-red-300 hover:text-red-500 text-sm">
+    Logout
+  </button>
+</div>
+
+<!-- Wallet + Balance -->
+<div class="px-5">
+  <div class="card mb-5">
+    <p class="text-sm text-cyan-300">Connected Wallet</p>
+    <p id="walletDisplay" class="font-semibold mt-1"></p>
+
+    <div class="mt-4">
+      <p class="text-sm text-cyan-300">Your ZAC Balance</p>
+      <h2 id="zacBalance" class="text-3xl mt-1 font-bold">0</h2>
     </div>
-  </header>
+  </div>
+</div>
 
-  <section class="grid">
-    <!-- Left column -->
-    <div class="left-col">
-      <!-- Balances -->
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h2 class="section-title" style="margin:0; font-size:1.1rem; font-family:Orbitron;">Welcome back</h2>
-            <div class="note" id="merchantName">Merchant</div>
-          </div>
-          <div style="text-align:right">
-            <div class="note">Store status</div>
-            <div style="font-weight:700; color:var(--zep-lime)">Active</div>
-          </div>
-        </div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-2 gap-4 px-5">
 
-        <div class="bal-row" style="margin-top:14px">
-          <div class="bal">
-            <h3>ZAC Balance</h3>
-            <div id="zacAmount" class="big">0.00 ZAC</div>
-            <div class="note">ZAC contract on Base</div>
-          </div>
-          <div class="bal">
-            <h3>Portfolio (USD)</h3>
-            <div id="portfolioUSD" class="big">$0.00</div>
-            <div class="note">Simulated price (MVP)</div>
-          </div>
-        </div>
+  <div class="card">
+    <h3 class="neon-text text-lg mb-2">Sales Overview</h3>
+    <p id="salesToday" class="text-xl font-bold">₵0</p>
+    <p class="text-sm text-cyan-300">Today</p>
+  </div>
 
-        <div class="actions-grid" style="margin-top:12px">
-          <div class="action" id="withdrawBtn">💸 Withdraw to Bank</div>
-          <div class="action" id="manageStore">🛒 Manage Store</div>
-          <div class="action" id="listProduct">➕ List Product</div>
-        </div>
-      </div>
+  <div class="card">
+    <h3 class="neon-text text-lg mb-2">Daily Visitors</h3>
+    <p id="visitors" class="text-xl font-bold">0</p>
+    <p class="text-sm text-cyan-300">Today</p>
+  </div>
 
-      <!-- Sales / Analytics -->
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h3 style="margin:0;font-family:Orbitron">Live Sales</h3>
-          <div class="note">Last 12 periods</div>
-        </div>
-        <div class="chart-wrap" style="margin-top:12px;">
-          <canvas id="salesChart"></canvas>
-        </div>
-      </div>
+  <a href="listing.html" class="nav-btn">
+    <p>📦 Add Products</p>
+  </a>
 
-      <!-- Recent orders (simulated) -->
-      <div class="card">
-        <h3 style="font-family:Orbitron">Recent Orders</h3>
-        <div id="ordersList" style="margin-top:10px"></div>
-      </div>
-    </div>
+  <a href="wallet.html" class="nav-btn">
+    <p>💳 Wallet & Payouts</p>
+  </a>
 
-    <!-- Right column -->
-    <aside class="right-col">
-      <div class="card profile">
-        <img id="avatar" class="avatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="avatar">
-        <div class="meta">
-          <h4 id="displayName">Alex Merchant</h4>
-          <p id="displayWallet" class="note">0x—</p>
-          <div style="margin-top:8px; display:flex; gap:8px;">
-            <button id="editProfile" class="logout-btn">Edit Profile</button>
-            <button id="refreshNow" class="logout-btn">Refresh</button>
-          </div>
-        </div>
-      </div>
+  <a href="profile.html" class="nav-btn">
+    <p>👤 Profile</p>
+  </a>
 
-      <div class="card zep-ai">
-        <div class="bubble">
-          <strong style="display:block;font-family:Orbitron">Zep AI Insights</strong>
-          <div id="zepInsight" class="note" style="margin-top:8px">Analyzing store performance...</div>
-        </div>
-        <div>
-          <button id="openZep" title="Ask Zep AI">Ask</button>
-        </div>
-      </div>
+  <a href="analytics.html" class="nav-btn">
+    <p>📈 Analytics</p>
+  </a>
 
-      <div class="card quick-links">
-        <a href="dashboard-store.html">Manage Products</a>
-        <a href="withdraw.html">Withdraw to Bank (Placeholder)</a>
-        <a href="reports.html">Detailed Reports</a>
-      </div>
-    </aside>
-  </section>
 </div>
 
 <script>
-// ---------- Configuration ----------
-const ZAC_TOKEN_ADDRESS = "0xfe4119a9cac1425d808526905e92386b4234bf2a";
-const tokenABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
-];
-// simulated price for MVP (you'll replace once token listed)
-const SIM_ZAC_USD = 0.15;
-
-// ---------- Helpers ----------
-const $ = id => document.getElementById(id);
-
-function fmtNum(n, digits=2){ return Number(n).toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits }); }
-
-// ---------- Session & Auth ----------
-async function requireAuth() {
-  // check local storage
-  const user = JSON.parse(localStorage.getItem('zepMerchant'));
-  if(!user || !user.wallet) {
-    // redirect to login page if not present
-    window.location.href = 'login.html';
-    return null;
-  }
-  return user;
+/* -------------------------
+   Check Login Session
+--------------------------*/
+const user = JSON.parse(localStorage.getItem("zepMerchant"));
+if (!user || !user.wallet) {
+  window.location.href = "login.html";
 }
 
-// ---------- Wallet & Provider ----------
-let provider = null;
-let signer = null;
-let currentWallet = null;
+/* Display Wallet */
+document.getElementById("walletDisplay").textContent =
+  user.wallet.slice(0, 6) + "..." + user.wallet.slice(-4);
 
-async function setupProviderFromStored() {
-  const user = JSON.parse(localStorage.getItem('zepMerchant'));
-  if(!user) return;
 
-  // Use window.ethereum where available; otherwise remain read-only provider
-  if(window.ethereum) {
-    try {
-      provider = new ethers.BrowserProvider(window.ethereum);
-      // create signer for the currently connected account if it's the same
-      const accounts = await provider.send("eth_accounts", []);
-      if(accounts && accounts.length && accounts[0].toLowerCase() === user.wallet.toLowerCase()) {
-        signer = await provider.getSigner();
-      } else {
-        // fallback to read-only provider (public RPC)
-        provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
-        signer = null;
-      }
-    } catch(e){
-      provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
-      signer = null;
-    }
-  } else {
-    provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
-  }
+/* -------------------------
+   MOCK ZAC Balance (MVP)
+   Replace with contract read later
+--------------------------*/
+async function loadZACBalance() {
+  document.getElementById("zacBalance").textContent = "Loading...";
+
+  // 💡 Temporary balance simulation
+  let fakeBalance = Math.floor(Math.random() * 5000) / 10;
+  document.getElementById("zacBalance").textContent = fakeBalance + " ZAC";
 }
+loadZACBalance();
 
-// fetch token balance from on-chain contract
-async function fetchZacBalance(wallet) {
-  try {
-    const rpc = provider || new ethers.JsonRpcProvider("https://mainnet.base.org");
-    const contract = new ethers.Contract(ZAC_TOKEN_ADDRESS, tokenABI, rpc);
-    const decimals = await contract.decimals();
-    const balance = await contract.balanceOf(wallet);
-    const formatted = Number(ethers.formatUnits(balance, decimals));
-    return formatted;
-  } catch(e) {
-    console.warn("onchain fetch failed", e);
-    // fallback to stored test credit or 25 ZAC default
-    const fallback = Number(localStorage.getItem('zacFallback') || 25);
-    return fallback;
-  }
-}
 
-// ---------- UI Update ----------
-async function refreshUI(force=false) {
-  const user = await requireAuth();
-  if(!user) return;
-
-  // wallet & name
-  $('displayName').textContent = user.name || 'Merchant';
-  $('displayWallet').textContent = user.wallet ? `${user.wallet.slice(0,6)}...${user.wallet.slice(-4)}` : '—';
-  $('walletChip').textContent = user.wallet ? `${user.wallet.slice(0,6)}...${user.wallet.slice(-4)}` : 'Not connected';
-
-  // network
-  if(window.ethereum && provider) {
-    try {
-      const net = await provider.getNetwork();
-      $('networkName').textContent = net ? (net.name || net.chainId) : 'Unknown';
-    } catch(e){
-      $('networkName').textContent = 'Unknown';
-    }
-  } else {
-    $('networkName').textContent = 'Base (read-only)';
-  }
-
-  // ZAC balance
-  const zac = await fetchZacBalance(user.wallet);
-  $('zacAmount').textContent = `${fmtNum(zac,2)} ZAC`;
-
-  // portfolio USD
-  const usd = (zac * SIM_ZAC_USD);
-  $('portfolioUSD').textContent = `$${fmtNum(usd,2)}`;
-
-  // save last known for fallback
-  localStorage.setItem('zacFallback', zac);
-
-  // update insight
-  document.getElementById('zepInsight').textContent = generateInsight(zac);
-
-  // refresh chart data if asked
-  if(force) updateSalesChart();
-}
-
-// ---------- Zep AI Insight (toy logic) ----------
-function generateInsight(zacBalance) {
-  if(zacBalance > 1000) return `🔥 High holdings: ${fmtNum(zacBalance,0)} ZAC — consider staking or converting part to fiat.`;
-  if(zacBalance > 100) return `📈 Nice! ${fmtNum(zacBalance,0)} ZAC — sales trending up. Push a flash deal.`;
-  if(zacBalance > 20) return `⚡ Keep going — ${fmtNum(zacBalance,0)} ZAC in wallet. Promote top-seller bundles.`;
-  return `💡 Low ZAC (${fmtNum(zacBalance,1)}). Consider running a promotion or earning via referrals.`;
-}
-
-// ---------- Wallet listeners (accounts / chain changes) ----------
-function attachWalletListeners() {
-  if(!window.ethereum) return;
-
-  // For multi-provider setups (MetaMask + Coinbase), use the global provider object events.
-  window.ethereum.on && window.ethereum.on('accountsChanged', (accounts) => {
-    if(!accounts || accounts.length === 0) {
-      // user disconnected
-      localStorage.removeItem('zepMerchant');
-      window.location.href = 'login.html';
+/* -------------------------
+   Real-Time Wallet Listener
+--------------------------*/
+if (window.ethereum) {
+  window.ethereum.on("accountsChanged", (accounts) => {
+    if (accounts.length === 0) {
+      logout();
     } else {
-      // update stored wallet if different
-      const stored = JSON.parse(localStorage.getItem('zepMerchant'));
-      if(stored && stored.wallet.toLowerCase() !== accounts[0].toLowerCase()) {
-        stored.wallet = accounts[0];
-        localStorage.setItem('zepMerchant', JSON.stringify(stored));
-      }
-      // refresh UI
-      setupProviderFromStored().then(()=> refreshUI(true));
-    }
-  });
-
-  window.ethereum.on && window.ethereum.on('chainChanged', (chainId) => {
-    // reload to adapt network
-    setupProviderFromStored().then(()=> refreshUI(true));
-  });
-}
-
-// ---------- Sales Chart (simulated) ----------
-let salesChart = null;
-function initSalesChart(){
-  const ctx = document.getElementById('salesChart').getContext('2d');
-  const initial = Array.from({length:12}, ()=> Math.floor(Math.random()*20)+5);
-  salesChart = new Chart(ctx, {
-    type:'line',
-    data:{
-      labels: Array.from({length:12}, (_,i)=>`T-${12-i}`),
-      datasets:[{
-        label:'Sales (ZAC)',
-        data: initial,
-        borderColor: '#00f0ff',
-        backgroundColor: 'rgba(0,240,255,0.12)',
-        fill:true, tension:0.4, pointRadius:3
-      }]
-    },
-    options:{
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{ticks:{color:'#bfefff'}, grid:{color:'rgba(255,255,255,0.04)'} },
-        y:{ticks:{color:'#bfefff'}, grid:{color:'rgba(255,255,255,0.04)'}, beginAtZero:true}
-      },
-      maintainAspectRatio:false
+      const updatedWallet = accounts[0];
+      localStorage.setItem("zepMerchant", JSON.stringify({
+        wallet: updatedWallet,
+        provider: user.provider
+      }));
+      location.reload();
     }
   });
 }
 
-// update chart with a new point
-function updateSalesChart(){
-  if(!salesChart) return;
-  salesChart.data.datasets[0].data.shift();
-  salesChart.data.datasets[0].data.push(Math.floor(Math.random()*25)+5);
-  salesChart.update();
-  // update recent orders list
-  renderRecentOrders();
+
+/* -------------------------
+   Logout
+--------------------------*/
+function logout() {
+  localStorage.removeItem("zepMerchant");
+  window.location.href = "login.html";
 }
-
-// render some simulated recent orders
-function renderRecentOrders(){
-  const el = $('ordersList'); el.innerHTML = '';
-  const items = [
-    {id:'ORD-1001', item:'Smartphone 12 Pro', amount:'220 USDT'},
-    {id:'ORD-1002', item:'Design eBook Pack', amount:'30 ZAC'},
-    {id:'ORD-1003', item:'Campus Meal Deal', amount:'4.50 USDT'},
-    {id:'ORD-1004', item:'Notebook Pack', amount:'4.00 USDT'}
-  ];
-  // show last 4 random
-  for(let i=0;i<4;i++){
-    const r = items[Math.floor(Math.random()*items.length)];
-    const div = document.createElement('div');
-    div.style.display='flex'; div.style.justifyContent='space-between'; div.style.padding='8px 0'; div.style.borderBottom='1px dashed rgba(255,255,255,0.03)';
-    div.innerHTML = `<div style="font-weight:600">${r.item}</div><div style="opacity:.85">${r.amount}</div>`;
-    el.appendChild(div);
-  }
-}
-
-// ---------- Buttons & actions ----------
-$('logoutBtn').addEventListener('click', ()=> {
-  localStorage.removeItem('zepMerchant');
-  // keep fallback zac if needed
-  window.location.href = 'index.html';
-});
-$('withdrawBtn').addEventListener('click', ()=> {
-  // placeholder: open withdraw.html or modal
-  window.location.href = 'withdraw.html';
-});
-$('manageStore').addEventListener('click', ()=> window.location.href='dashboard-store.html');
-$('listProduct').addEventListener('click', ()=> window.location.href='dashboard-store.html');
-$('editProfile').addEventListener('click', ()=> {
-  // open profile page to edit
-  window.location.href = 'profile.html';
-});
-$('refreshNow').addEventListener('click', ()=> refreshUI(true));
-$('openZep').addEventListener('click', ()=> alert('Zep AI is available in the next release — coming soon!'));
-
-// ---------- Initialization ----------
-(async function init(){
-  // ensure session
-  const user = await requireAuth();
-  if(!user) return;
-
-  // show stored profile info
-  $('merchantName').textContent = user.name || 'Merchant';
-  if(user.avatar) $('avatar').src = user.avatar;
-
-  // set provider based on environment
-  await setupProviderFromStored();
-
-  // initial UI refresh
-  refreshUI(true);
-
-  // chart + orders
-  initSalesChart();
-  renderRecentOrders();
-
-  // attach listeners so if user changes wallet we react
-  attachWalletListeners();
-
-  // auto-refresh balances periodically
-  setInterval(async ()=> {
-    await refreshUI(true);
-    updateSalesChart();
-  }, 30000); // every 30s
-})();
 </script>
+
 </body>
 </html>
