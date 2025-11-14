@@ -1,239 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zep Swipe — Merchant Login</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zep Swipe — Merchant Login</title>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
+<style>
+body {
+    font-family: "Poppins", sans-serif;
+    background: radial-gradient(circle at 20% 20%, #06001a, #000010, #0a0020);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
 
-  <!-- Icons -->
-  <script src="https://kit.fontawesome.com/a2e860f6c2.js" crossorigin="anonymous"></script>
+.glass {
+    background: rgba(255,255,255,0.07);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 2rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0,240,255,0.3);
+    backdrop-filter: blur(20px);
+}
 
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at 20% 20%, #040017, #00000b, #0b0025);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-    }
+.title {
+    font-family: "Orbitron";
+    background: linear-gradient(90deg,#00f0ff,#9c4dff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
 
-    .glass {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      border-radius: 1.5rem;
-      padding: 2rem;
-      border: 1px solid rgba(255,255,255,0.15);
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 0 35px rgba(0,220,255,0.25);
-      animation: fadeIn .8s ease-in-out;
-    }
+.wallet-btn {
+    width: 100%;
+    padding: 0.9rem;
+    margin-bottom: 1rem;
+    border-radius: 0.8rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.7rem;
+    cursor: pointer;
+    transition: 0.25s;
+}
 
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(15px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
+.wallet-btn:hover {
+    background: linear-gradient(90deg,#00f0ff33,#9c4dff33);
+    transform: scale(1.03);
+}
 
-    .title {
-      font-family: 'Orbitron';
-      font-size: 1.8rem;
-      background: linear-gradient(90deg,#00eaff,#b36bff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 1.5rem;
-      text-align: center;
-    }
+.coming {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
 
-    .wallet-btn {
-      width: 100%;
-      padding: 0.9rem;
-      border-radius: 0.8rem;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.15);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 1rem;
-      transition: .25s;
-    }
+#loading {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,20,0.85);
+    backdrop-filter: blur(20px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 
-    .wallet-btn:hover {
-      transform: scale(1.02);
-      background: linear-gradient(90deg,#00eaff33,#b36bff33);
-      box-shadow: 0 0 18px rgba(0,240,255,0.25);
-    }
+.shimmer {
+    margin-top: 1rem;
+    width: 180px;
+    height: 4px;
+    background: linear-gradient(90deg,#00f0ff,#9c4dff,#00f0ff);
+    background-size: 200%;
+    animation: shimmer 1.5s infinite linear;
+}
 
-    .disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
-
-    /* Loading Overlay */
-    #loadingOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,20,0.85);
-      backdrop-filter: blur(15px);
-      z-index: 999;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .shimmer {
-      margin-top: 1rem;
-      height: 4px;
-      width: 180px;
-      background: linear-gradient(90deg,#00eaff,#b36bff,#00eaff);
-      background-size: 200%;
-      animation: shimmer 1.4s infinite;
-      border-radius: 2px;
-    }
-
-    @keyframes shimmer {
-      from {background-position: 200% 0;}
-      to   {background-position: -200% 0;}
-    }
-  </style>
+@keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+}
+</style>
 </head>
 
 <body>
 
-  <div class="glass">
+<div class="glass">
     <h1 class="title">Zep Swipe Merchant Login</h1>
 
-    <!-- MetaMask Login -->
-    <button id="connectMetaMask" class="wallet-btn">
-      <i class="fa-brands fa-ethereum"></i> Connect MetaMask
+    <button id="btnMetaMask" class="wallet-btn">
+        🦊 Connect MetaMask
     </button>
 
-    <!-- Coinbase / Base Wallet Login -->
-    <button id="connectCoinbase" class="wallet-btn">
-      <i class="fa-brands fa-bitcoin"></i> Connect Coinbase / Base Wallet
+    <button id="btnCoinbase" class="wallet-btn">
+        💼 Connect Coinbase / Base Wallet
     </button>
 
-    <p class="text-center mt-3 text-cyan-300 text-sm">or continue with phone</p>
+    <p class="text-cyan-300 text-sm mt-3">or continue with phone</p>
 
-    <button class="wallet-btn disabled" disabled>
-      <i class="fa-solid fa-mobile"></i> Phone Login (Coming Soon)
+    <button class="wallet-btn coming" disabled>
+        📱 Phone Login (Coming Soon)
     </button>
 
-    <p id="status" class="text-center text-cyan-400 text-sm mt-2"></p>
+    <p id="status" class="text-cyan-400 text-sm mt-3"></p>
 
-    <p class="text-center mt-4 opacity-60 text-xs">© 2025 Zep Swipe — Built on Base</p>
-  </div>
+    <div class="text-center opacity-60 mt-4 text-xs">
+        © 2025 Zep Swipe — Built on Base
+    </div>
+</div>
 
-  <!-- Loading Screen -->
-  <div id="loadingOverlay">
-    <p class="text-cyan-100 text-lg font-orbitron">Authenticating…</p>
+<!-- Loading -->
+<div id="loading">
+    <p class="text-cyan-100 text-lg font-orbitron">Authenticating wallet…</p>
     <div class="shimmer"></div>
-  </div>
+</div>
 
-  <!-- ===========================
-        FIXED LOGIN SCRIPT
-  ============================ -->
-  <script>
-    const overlay = document.getElementById("loadingOverlay");
-    const statusBox = document.getElementById("status");
+<script>
+const loading = document.getElementById("loading");
+const statusBox = document.getElementById("status");
 
-    /** ----------------------------------
-     *  AUTO-LOGIN SESSION
-     * ---------------------------------- */
-    window.onload = () => {
-      const session = JSON.parse(localStorage.getItem("zepMerchant"));
-      if (session && session.wallet) {
-        overlay.style.display = "flex";
-        setTimeout(() => {
-          window.location.href = "merchants-dashboard.html";
-        }, 1200);
-      }
-    };
+function startLoading() { loading.style.display = "flex"; }
 
-    /** -------------------------
-     *  FIXED META MASK LOGIN
-     * ------------------------ */
-    document.getElementById("connectMetaMask").onclick = async () => {
-      if (!window.ethereum) return alert("Install MetaMask to continue.");
+// Auto-login persistence
+window.onload = () => {
+    const user = JSON.parse(localStorage.getItem("zepMerchant"));
+    if (user && user.wallet) {
+        startLoading();
+        setTimeout(() => window.location.href = "merchants-dashboard.html", 1200);
+    }
+};
 
-      try {
+// === MetaMask Login ===
+document.getElementById("btnMetaMask").onclick = async () => {
+    if (!window.ethereum) return alert("MetaMask not installed.");
+
+    try {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        await provider.send("eth_requestAccounts", []); 
-
-        const signer = await provider.getSigner();
-        const wallet = await signer.getAddress();
-
-        localStorage.setItem("zepMerchant", JSON.stringify({
-          wallet,
-          provider: "metamask",
-          loginTime: Date.now()
-        }));
+        const accounts = await provider.send("eth_requestAccounts", []);
+        const wallet = accounts[0];
 
         statusBox.innerHTML = `🦊 Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
-        overlay.style.display = "flex";
-
-        setTimeout(() => {
-          window.location.href = "merchants-dashboard.html";
-        }, 1200);
-
-      } catch (e) {
-        console.error(e);
-        alert("MetaMask connection failed.");
-      }
-    };
-
-    /** ----------------------------------
-     *  FIXED COINBASE / BASE LOGIN
-     * ---------------------------------- */
-    document.getElementById("connectCoinbase").onclick = async () => {
-      const coinbaseProvider =
-        window.coinbaseWalletExtension ||
-        (window.ethereum?.providers?.find(p => p.isCoinbaseWallet)) ||
-        (window.ethereum?.isCoinbaseWallet ? window.ethereum : null);
-
-      if (!coinbaseProvider) {
-        return alert("Coinbase Wallet not detected. Open inside Coinbase Wallet browser.");
-      }
-
-      try {
-        const provider = new ethers.BrowserProvider(coinbaseProvider);
-        await provider.send("eth_requestAccounts", []);
-
-        const signer = await provider.getSigner();
-        const wallet = await signer.getAddress();
 
         localStorage.setItem("zepMerchant", JSON.stringify({
-          wallet,
-          provider: "coinbase",
-          loginTime: Date.now()
+            wallet,
+            provider: "metamask",
         }));
 
-        statusBox.innerHTML = `💼 Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
-        overlay.style.display = "flex";
+        startLoading();
+        setTimeout(() => window.location.href = "merchants-dashboard.html", 1300);
 
-        setTimeout(() => {
-          window.location.href = "merchants-dashboard.html";
-        }, 1200);
-
-      } catch (e) {
+    } catch (e) {
         console.error(e);
-        alert("Coinbase Wallet connection failed.");
-      }
-    };
-  </script>
+        alert("MetaMask login failed. Try again.");
+    }
+};
+
+// === Coinbase / Base Wallet Login ===
+document.getElementById("btnCoinbase").onclick = async () => {
+
+    let coinbase;
+    if (window.ethereum?.providers) {
+        coinbase = window.ethereum.providers.find(p => p.isCoinbaseWallet);
+    } else if (window.ethereum?.isCoinbaseWallet) {
+        coinbase = window.ethereum;
+    }
+
+    if (!coinbase) return alert("Open this page inside Coinbase Wallet or Base Wallet.");
+
+    try {
+        const provider = new ethers.BrowserProvider(coinbase);
+        const accounts = await provider.send("eth_requestAccounts", []);
+        const wallet = accounts[0];
+
+        statusBox.innerHTML = `💼 Connected: ${wallet.slice(0,6)}...${wallet.slice(-4)}`;
+
+        localStorage.setItem("zepMerchant", JSON.stringify({
+            wallet,
+            provider: "coinbase",
+        }));
+
+        startLoading();
+        setTimeout(() => window.location.href = "merchants-dashboard.html", 1300);
+
+    } catch (e) {
+        console.error(e);
+        alert("Coinbase login failed.");
+    }
+};
+</script>
 
 </body>
 </html>
