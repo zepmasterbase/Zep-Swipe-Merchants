@@ -49,7 +49,7 @@ body {
   100%{text-shadow:0 0 8px rgba(0,240,255,0.4);}
 }
 
-/* Header */
+/* HEADER */
 .header {
   display:flex;
   justify-content:space-between;
@@ -63,40 +63,44 @@ body {
   box-shadow:0 0 25px rgba(0,240,255,0.25);
 }
 
+/* Sleeker neon logout icon */
 .logout-btn {
-  width:30px;
+  width:34px;
   cursor:pointer;
-  filter:drop-shadow(0 0 8px red);
-  transition:0.2s;
+  filter:drop-shadow(0 0 12px rgba(255,80,80,1));
+  transition:0.25s;
 }
-
 .logout-btn:hover {
-  transform:scale(1.1);
+  transform:scale(1.15) rotate(4deg);
+  filter:drop-shadow(0 0 18px rgba(255,0,0,1));
 }
 
-/* Footer */
+/* FOOTER NAV */
 .footer-nav {
   position:fixed;
   bottom:0; left:0; right:0;
   display:flex;
   justify-content:space-around;
-  padding:12px 20px;
+  padding:14px 20px;
   background:rgba(255,255,255,0.06);
   border-top:1px solid rgba(255,255,255,0.14);
   backdrop-filter:blur(20px);
 }
 
+/* 3D neon glowing footer icons */
 .footer-icon {
-  width:32px;
-  filter:drop-shadow(0 0 12px rgba(0,255,255,0.7));
+  width:38px;
+  filter:
+    drop-shadow(0 0 6px rgba(0,255,255,0.6))
+    drop-shadow(0 0 10px rgba(156,77,255,0.8));
   transition:0.3s;
 }
-
 .footer-icon:hover {
-  transform:scale(1.2);
-  filter:drop-shadow(0 0 20px rgba(156,77,255,1));
+  transform:scale(1.22);
+  filter:
+    drop-shadow(0 0 14px rgba(0,255,255,1))
+    drop-shadow(0 0 30px rgba(156,77,255,1));
 }
-
 </style>
 </head>
 
@@ -105,7 +109,11 @@ body {
 <!-- HEADER -->
 <div class="header">
   <h2 class="glow text-xl">Merchant Dashboard</h2>
-  <img src="https://www.svgrepo.com/show/503029/logout.svg" class="logout-btn" onclick="logout()">
+
+  <!-- NEW SLEEK NEON LOGOUT ICON -->
+  <img src="https://www.svgrepo.com/download/533006/logout-3.svg"
+       class="logout-btn"
+       onclick="logout()">
 </div>
 
 <!-- WALLET CARD -->
@@ -150,21 +158,28 @@ body {
 
 <!-- FOOTER NAV -->
 <div class="footer-nav">
+
+  <!-- NEW POS TERMINAL ICON -->
   <a href="merchants-dashboard.html">
-    <img src="https://www.svgrepo.com/svg/532597/dashboard" class="footer-icon">
+    <img src="https://www.svgrepo.com/download/531300/pos-machine-2.svg"
+         class="footer-icon">
   </a>
 
   <a href="listing.html">
-    <img src="https://www.svgrepo.com/show/532001/add-circle.svg" class="footer-icon">
+    <img src="https://www.svgrepo.com/download/533173/add-circle-2.svg"
+         class="footer-icon">
   </a>
 
   <a href="wallet.html">
-    <img src="https://www.svgrepo.com/show/488484/wallet.svg" class="footer-icon">
+    <img src="https://www.svgrepo.com/download/532992/wallet-4.svg"
+         class="footer-icon">
   </a>
 
   <a href="profile.html">
-    <img src="https://www.svgrepo.com/show/493468/user-circle.svg" class="footer-icon">
+    <img src="https://www.svgrepo.com/download/533453/user-badge.svg"
+         class="footer-icon">
   </a>
+
 </div>
 
 <script>
