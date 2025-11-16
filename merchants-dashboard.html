@@ -1,118 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Zep Swipe — Merchant Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
 
 <style>
 :root {
-  --zep-blue:#00eaff;
-  --zep-purple:#a95dff;
+  --zep-blue:#00f0ff;
+  --zep-purple:#8c4dff;
+  --zep-dark:#060014;
   --glass:rgba(255,255,255,0.08);
-  --bg:radial-gradient(circle at 20% 20%, #050018, #000010, #0a0020);
 }
 
 body {
-  background:var(--bg);
-  color:#fff;
+  background: radial-gradient(circle at 30% 20%, #080020, #02000b, #000009);
   font-family:'Poppins',sans-serif;
-  padding-bottom:120px;
+  color:white;
+  padding-bottom:110px;
 }
 
-/* Glass Containers */
+/* PULSING GLASS CARD */
 .glass {
   background:var(--glass);
-  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(25px);
+  border:1px solid rgba(255,255,255,0.18);
   border-radius:1.3rem;
-  padding:1.4rem;
-  backdrop-filter:blur(20px);
-  box-shadow:0 0 40px rgba(0,255,255,0.18);
+  padding:1.5rem;
+  box-shadow:0 0 28px rgba(0,255,255,0.15);
+  transition:0.35s ease-in-out;
+}
+.glass:hover {
+  box-shadow:0 0 42px rgba(136,77,255,0.5);
+  transform:scale(1.02);
 }
 
-/* Neon Title */
+/* GLOW TEXT */
 .glow {
-  font-family:'Orbitron';
   background:linear-gradient(90deg,var(--zep-blue),var(--zep-purple));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:titlePulse 4s ease-in-out infinite alternate;
+  font-family:'Orbitron';
+  animation:glowPulse 3.5s infinite ease-in-out;
 }
-@keyframes titlePulse{
-  0%{text-shadow:0 0 12px rgba(0,255,255,0.4);}
-  100%{text-shadow:0 0 34px rgba(169,93,255,0.9);}
+@keyframes glowPulse {
+  0%{ text-shadow:0 0 10px rgba(0,255,255,0.3); }
+  50%{ text-shadow:0 0 32px rgba(140,77,255,0.9); }
+  100%{ text-shadow:0 0 10px rgba(0,255,255,0.3); }
 }
 
 /* HEADER */
 .header {
-  margin:18px;
-  padding:14px 18px;
-  border-radius:18px;
-  background:rgba(255,255,255,0.06);
+  margin:20px;
+  padding:16px 20px;
+  background:rgba(255,255,255,0.08);
   backdrop-filter:blur(20px);
+  border-radius:18px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 0 28px rgba(0,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.16);
+  box-shadow:0 0 25px rgba(0,255,255,0.25);
 }
 
-/* LOGOUT ICON */
-.logout-icon {
-  width:34px;
+/* Icon buttons */
+.icon-btn {
+  width:32px;
   cursor:pointer;
-  filter:drop-shadow(0 0 10px rgba(255,80,80,0.9));
-  transition:0.25s;
+  filter:drop-shadow(0 0 14px rgba(0,255,255,0.6));
+  transition:0.3s;
 }
-.logout-icon:hover {
-  transform:scale(1.15);
-  filter:drop-shadow(0 0 16px rgba(255,20,20,1));
-}
-
-/* 3D NEON ICONS */
-.icon-3d {
-  width:46px;
-  filter:
-    drop-shadow(0 0 6px var(--zep-blue))
-    drop-shadow(0 0 10px var(--zep-purple));
-  transition:0.25s;
-}
-.icon-3d:hover {
-  transform:scale(1.15);
-  filter:
-    drop-shadow(0 0 12px var(--zep-purple))
-    drop-shadow(0 0 20px var(--zep-blue));
+.icon-btn:hover {
+  transform:scale(1.17);
+  filter:drop-shadow(0 0 22px rgba(136,77,255,1));
 }
 
 /* Footer Navigation */
 .footer-nav {
   position:fixed;
-  bottom:0;
-  left:0; right:0;
+  bottom:0; left:0; right:0;
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.15);
   padding:12px 25px;
   display:flex;
   justify-content:space-between;
-  background:rgba(255,255,255,0.06);
-  backdrop-filter:blur(18px);
-  border-top:1px solid rgba(255,255,255,0.15);
 }
-.footer-btn {
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  font-size:0.75rem;
-  opacity:0.9;
+.footer-icon {
+  width:34px;
+  filter:drop-shadow(0 0 10px rgba(0,255,255,0.6));
+  transition:0.3s;
 }
-.footer-btn span {
-  margin-top:3px;
+.footer-icon:hover {
+  transform:scale(1.18);
+  filter:drop-shadow(0 0 20px rgba(136,77,255,1));
+}
+
+/* Button */
+.btn {
+  display:block;
+  width:100%;
+  text-align:center;
   background:linear-gradient(90deg,var(--zep-blue),var(--zep-purple));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  padding:12px;
   font-family:'Orbitron';
-  font-size:0.7rem;
+  color:#050018;
+  border-radius:999px;
+  font-weight:600;
+  margin-top:10px;
+  box-shadow:0 0 20px rgba(0,255,255,0.3);
+  transition:0.3s;
 }
+.btn:hover {
+  transform:scale(1.05);
+  box-shadow:0 0 30px rgba(140,77,255,0.6);
+}
+
 </style>
 </head>
 
@@ -121,99 +128,108 @@ body {
 <!-- HEADER -->
 <div class="header">
   <h2 class="glow text-xl">Merchant Dashboard</h2>
-  <img onclick="logout()" class="logout-icon" 
-       src="https://www.svgrepo.com/show/533038/logout-3.svg">
+
+  <div class="flex items-center gap-4">
+    <!-- Zep AI -->
+    <img src="https://www.svgrepo.com/show/520868/ai.svg" class="icon-btn" onclick="window.location.href='zep-ai.html'">
+
+    <!-- Logout -->
+    <img src="https://www.svgrepo.com/show/513317/logout-2.svg" class="icon-btn" onclick="logout()">
+  </div>
 </div>
 
-<!-- WALLET CARD -->
-<div class="glass mx-5 mb-5">
-  <p class="text-cyan-300 text-sm">Connected Wallet</p>
-  <p id="walletAddress" class="text-lg mt-1">Loading...</p>
+
+<!-- WALLET & BALANCES -->
+<div class="glass mx-5 mb-6">
+  <p class="text-cyan-300 text-sm">Wallet Connected</p>
+  <p id="walletAddress" class="text-lg mt-1">—</p>
 
   <hr class="border-cyan-900 my-3">
 
   <p class="text-cyan-300 text-sm">ZAC Balance</p>
-  <h2 id="zacBalance" class="text-3xl font-semibold mt-1">0 ZAC</h2>
+  <h2 id="zacBalance" class="text-3xl font-semibold mt-1">0.00 ZAC</h2>
 
   <p class="text-purple-300 text-xs mt-2 opacity-80">Base Mainnet</p>
 </div>
 
-<!-- GRID FEATURES -->
+
+<!-- FEATURE GRID -->
 <div class="grid grid-cols-2 gap-4 mx-5">
 
-  <a href="pos.html" class="glass text-center py-5">
-    <img src="https://www.svgrepo.com/show/530478/card-pos.svg" class="icon-3d mx-auto">
-    <p class="glow mt-2 text-sm">POS</p>
+  <a href="listing.html" class="glass text-center py-7">
+    <img src="https://www.svgrepo.com/show/520648/add-folder.svg" class="w-12 mx-auto mb-2 footer-icon">
+    <p class="glow text-sm">Add Products</p>
   </a>
 
-  <a href="listing.html" class="glass text-center py-5">
-    <img src="https://www.svgrepo.com/show/532001/add-circle.svg" class="icon-3d mx-auto">
-    <p class="glow mt-2 text-sm">Add Products</p>
+  <a href="orders.html" class="glass text-center py-7">
+    <img src="https://www.svgrepo.com/show/532085/orders.svg" class="w-12 mx-auto mb-2 footer-icon">
+    <p class="glow text-sm">Orders</p>
   </a>
 
-  <a href="orders.html" class="glass text-center py-5">
-    <img src="https://www.svgrepo.com/show/532557/package.svg" class="icon-3d mx-auto">
-    <p class="glow mt-2 text-sm">Orders</p>
+  <a href="sales.html" class="glass text-center py-7">
+    <img src="https://www.svgrepo.com/show/521775/money-income.svg" class="w-12 mx-auto mb-2 footer-icon">
+    <p class="glow text-sm">Sales</p>
   </a>
 
-  <a href="wallet.html" class="glass text-center py-5">
-    <img src="https://www.svgrepo.com/show/488484/wallet.svg" class="icon-3d mx-auto">
-    <p class="glow mt-2 text-sm">Withdraw</p>
+  <a href="wallet.html" class="glass text-center py-7">
+    <img src="https://www.svgrepo.com/show/488484/wallet.svg" class="w-12 mx-auto mb-2 footer-icon">
+    <p class="glow text-sm">Withdraw</p>
   </a>
 
 </div>
 
-<!-- Analytics Card -->
-<div class="glass mx-5 mt-6 mb-28">
-  <h2 class="glow text-lg mb-2">Store Insights</h2>
-  <p class="text-gray-300 text-sm">Track likes, views & purchases in real time.</p>
+
+<!-- INSIGHTS -->
+<div class="glass mx-5 mt-6 mb-24">
+  <h2 class="glow text-lg">Store Insights</h2>
+  <p class="text-gray-300 text-sm mt-1">
+    Track performance of your store in real-time.
+  </p>
+
+  <button class="btn" onclick="window.location.href='analytics.html'">
+    View Full Analytics
+  </button>
 </div>
+
 
 <!-- FOOTER NAV -->
 <div class="footer-nav">
 
-  <a href="pos.html" class="footer-btn">
-    <img class="icon-3d" src="https://www.svgrepo.com/show/530478/card-pos.svg">
-    <span>POS</span>
+  <a href="merchants-dashboard.html">
+    <img src="https://www.svgrepo.com/show/533094/dashboard-3d.svg" class="footer-icon">
   </a>
 
-  <a href="listing.html" class="footer-btn">
-    <img class="icon-3d" src="https://www.svgrepo.com/show/532001/add-circle.svg">
-    <span>Add</span>
+  <a href="pos.html">
+    <img src="https://www.svgrepo.com/show/521313/pos.svg" class="footer-icon">
   </a>
 
-  <a href="wallet.html" class="footer-btn">
-    <img class="icon-3d" src="https://www.svgrepo.com/show/488484/wallet.svg">
-    <span>Wallet</span>
+  <a href="listing.html">
+    <img src="https://www.svgrepo.com/show/489978/add.svg" class="footer-icon">
   </a>
 
-  <a href="profile.html" class="footer-btn">
-    <img class="icon-3d" src="https://www.svgrepo.com/show/493468/user-circle.svg">
-    <span>Profile</span>
+  <a href="profile.html">
+    <img src="https://www.svgrepo.com/show/493468/user-circle.svg" class="footer-icon">
   </a>
 
 </div>
 
+
 <script>
-/* -------------------------------------
-   LOGIN CHECK
--------------------------------------- */
+/* AUTH CHECK */
 window.addEventListener("load", () => {
   const user = JSON.parse(localStorage.getItem("zepUser"));
   if (!user || !user.loggedIn) {
     window.location.href = "login.html";
   } else {
-    document.getElementById("walletAddress").textContent =
+    document.getElementById("walletAddress").innerHTML =
       user.wallet.slice(0,6) + "..." + user.wallet.slice(-4);
   }
 });
 
-/* -------------------------------------
-   LOGOUT
--------------------------------------- */
-function logout() {
+/* LOGOUT */
+function logout(){
   localStorage.removeItem("zepUser");
-  window.location.href = "index.html";
+  window.location.href = "login.html";
 }
 </script>
 
