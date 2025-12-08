@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ZepSwipe — Acquire skills & earn ZAC</title>
+  <title>ZepSwipe — Acquire skills &amp; earn ZAC</title>
   <meta name="description" content="ZepSwipe — Acquire digital skills while you earn ZAC. Micro-modules, on-chain rewards and the ZepShop student marketplace." />
 
   <!-- Fonts -->
@@ -11,16 +11,14 @@
 
   <style>
     :root{
-      --bg-dark: #030318;
       --bg-deep: linear-gradient(180deg,#050422 0%,#020218 100%);
       --neon-cyan: #00f0ff;
       --neon-violet: #8e4bff;
       --glass: rgba(255,255,255,0.04);
-      --muted: rgba(200,220,255,0.12);
       --white: #ffffff;
-      --accent: linear-gradient(90deg,var(--neon-cyan),var(--neon-violet));
-      --radius: 18px;
+      --accent-grad: linear-gradient(90deg,var(--neon-cyan),var(--neon-violet));
       --max-width: 1200px;
+      --radius: 18px;
     }
 
     /* reset */
@@ -42,9 +40,9 @@
     /* header */
     header{
       width:100%;
-      max-width:1200px;
+      max-width:var(--max-width);
       margin:0 auto;
-      padding:18px 20px;
+      padding:14px 20px;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -53,42 +51,44 @@
       top:16px;
       left:0;
       right:0;
+      z-index:60;
       background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
       border-radius: 12px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-      z-index:40;
+      border: 1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(8px);
+      animation: headerPulse 3.5s infinite alternate;
+    }
+    @keyframes headerPulse {
+      from { box-shadow: 0 6px 22px rgba(0,240,255,0.06), inset 0 0 0 rgba(156,77,255,0); }
+      to   { box-shadow: 0 18px 48px rgba(0,240,255,0.12), inset 0 0 30px rgba(156,77,255,0.03); }
     }
 
-    /* logo */
+    /* brand logo (inline SVG) */
     .brand{
       display:flex;
       align-items:center;
       gap:12px;
     }
-    .brand img{
-      width:46px;
-      height:46px;
-      object-fit:contain;
-      border-radius:10px;
-      box-shadow:0 8px 28px rgba(0,240,255,0.06);
-      background:linear-gradient(90deg,var(--neon-cyan),var(--neon-violet));
-      padding:6px;
+    .logo-svg {
+      width:48px;
+      height:48px;
+      display:inline-block;
+      filter: drop-shadow(0 8px 26px rgba(0,240,255,0.08));
+      border-radius:10px; padding:6px;
+      background: linear-gradient(90deg, rgba(0,240,255,0.06), rgba(142,75,255,0.06));
     }
     .brand .title{
       font-family: "Orbitron";
       font-weight:700;
       font-size:18px;
-      background: var(--accent);
+      background: var(--accent-grad);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
     }
 
     /* header actions */
-    .header-actions{
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
+    .header-actions{display:flex;gap:12px;align-items:center}
     .connect-btn{
       display:inline-flex;
       align-items:center;
@@ -96,7 +96,7 @@
       padding:10px 18px;
       border-radius:999px;
       font-weight:700;
-      background:var(--accent);
+      background:var(--accent-grad);
       color:#001;
       text-decoration:none;
       box-shadow:0 12px 40px rgba(0,240,255,0.12);
@@ -105,7 +105,7 @@
     .connect-btn:active{transform:translateY(1px)}
 
     /* main layout */
-    main {
+    main{
       width:100%;
       max-width:var(--max-width);
       margin:120px 20px 40px;
@@ -122,7 +122,7 @@
       font-size:48px;
       line-height:1.02;
       margin:0 0 12px;
-      background: var(--accent);
+      background: var(--accent-grad);
       -webkit-background-clip:text;
       -webkit-text-fill-color:transparent;
       text-shadow:0 10px 36px rgba(0,240,255,0.06);
@@ -137,31 +137,46 @@
     .cta-row{display:flex;gap:14px;flex-wrap:wrap}
     .btn-cta{
       padding:12px 22px;border-radius:999px;border:0;font-weight:700;
-      background:var(--accent);color:#001;text-decoration:none;box-shadow:0 10px 36px rgba(0,240,255,0.08);
+      background:var(--accent-grad);color:#001;text-decoration:none;box-shadow:0 10px 36px rgba(0,240,255,0.08);
       font-family:"Orbitron";
     }
     .btn-ghost{
       padding:12px 20px;border-radius:999px;border:1px solid rgba(255,255,255,0.06);color:rgba(220,240,255,0.9);text-decoration:none;font-weight:600;background:transparent;
     }
 
-    /* image placeholder 3d neon student container */
-    .visual {
+    /* small glass pulse */
+    .glass-pulse{
+      width:160px;height:160px;border-radius:20px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.06);
+      box-shadow:0 12px 50px rgba(0,240,255,0.06);
+      display:flex;align-items:center;justify-content:center;margin-top:28px;
+      animation:glassGlow 3.6s infinite alternate;
+    }
+    @keyframes glassGlow{
+      from{box-shadow:0 10px 30px rgba(0,240,255,0.06)}
+      to{box-shadow:0 18px 48px rgba(156,77,255,0.08)}
+    }
+
+    /* right visual */
+    .visual{
       border-radius:20px;
       padding:18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
       box-shadow: 0 18px 60px rgba(0,0,0,0.6);
       display:flex;
       justify-content:center;
       align-items:center;
       min-height:420px;
     }
-    .visual .card {
+
+    .card{
       width:100%;
       max-width:360px;
       border-radius:20px;
       padding:18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03);
       position:relative;
       overflow:hidden;
       display:flex;
@@ -170,17 +185,18 @@
       align-items:center;
     }
 
-    /* 3D neon image (use your student image file) */
+    /* student 3D portrait container */
     .student-3d{
       width:240px;
       height:240px;
       border-radius:999px;
-      background: radial-gradient(circle at 30% 20%, rgba(0,240,255,0.12) 0%, rgba(142,75,255,0.08) 35%, rgba(0,0,0,0.15) 100%);
+      background: radial-gradient(circle at 30% 20%, rgba(0,240,255,0.08) 0%, rgba(142,75,255,0.06) 35%, rgba(0,0,0,0.12) 100%);
       display:grid;
       place-items:center;
-      padding:6px;
+      padding:8px;
       box-shadow: 0 24px 60px rgba(142,75,255,0.06), inset 0 -8px 20px rgba(0,0,0,0.4);
       border: 1px solid rgba(0,240,255,0.06);
+      transition: transform .45s ease, box-shadow .45s;
     }
     .student-3d img{
       width:92%;
@@ -190,39 +206,26 @@
       box-shadow: 0 14px 40px rgba(0,0,0,0.6), 0 0 36px rgba(142,75,255,0.08);
       transform: translateY(0);
       transition: transform .45s ease;
+      display:block;
     }
-    .student-3d:hover img{ transform: translateY(-6px) }
+    .student-3d:hover{ transform: translateY(-6px); box-shadow:0 28px 80px rgba(142,75,255,0.12) }
+    .student-3d:hover img{ transform: translateY(-8px); }
 
-    /* mobile mock / phone panel right side */
-    .device-mock {
-      width:100%;
-      margin-top:6px;
-      display:flex;
-      gap:12px;
-      flex-direction:column;
-      align-items:stretch;
-      width:100%;
-    }
-    .device-card{
-      border-radius:20px;padding:14px;background:linear-gradient(180deg,#021028 0%,#03102b 100%);border:1px solid rgba(255,255,255,0.03);
-      box-shadow: 0 12px 42px rgba(0,0,0,0.5);
-    }
-    .balance{
-      display:flex;flex-direction:column;gap:6px;
-      align-items:center;margin-bottom:10px;
-    }
+    /* device mock inside card */
+    .device-mock{width:100%;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+    .device-card{border-radius:12px;padding:12px;background:linear-gradient(180deg,#021028 0%,#03102b 100%);border:1px solid rgba(255,255,255,0.03);box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+    .balance{display:flex;flex-direction:column;gap:6px;align-items:center;margin-bottom:10px}
     .balance .label{font-size:12px;color:rgba(200,220,255,0.8);font-weight:600}
     .balance .amount{font-family:"Orbitron";font-size:28px;font-weight:700}
     .device-actions{display:flex;flex-direction:column;gap:10px}
-    .device-actions a{display:block;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;color:#001;background:var(--accent)}
+    .device-actions a{display:block;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;color:#001;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-violet))}
 
-    /* placeholder small text */
     .coming-soon{margin-top:12px;display:inline-block;padding:10px 14px;border-radius:12px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);font-weight:700;color:rgba(210,230,255,0.9)}
 
     /* footer */
     footer{width:100%;max-width:var(--max-width);margin:36px auto 60px;padding:26px 20px;text-align:center;color:rgba(200,220,255,0.7)}
     .socials{display:flex;gap:18px;justify-content:center;margin-bottom:8px}
-    .socials a{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));color:var(--white);text-decoration:none;border:1px solid rgba(255,255,255,0.03)}
+    .socials a{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));color:var(--white);text-decoration:none;border:1px solid rgba(255,255,255,0.03)}
     .socials svg{width:18px;height:18px;fill:currentColor}
 
     /* responsive */
@@ -234,36 +237,64 @@
       header{padding:12px}
       .brand .title{font-size:16px}
       .hero-left h1{font-size:28px}
+      .student-3d{width:190px;height:190px}
     }
+
+    /* Accessibility: focus styles */
+    a:focus, button:focus { outline: 3px dashed rgba(0,240,255,0.16); outline-offset: 4px; border-radius:8px; }
   </style>
 </head>
 <body>
 
-  <!-- NOTE: Put your logo file in same folder as index.html and name it "zep-logo.png"
-       Put your 3D student image in same folder and name it "student-creator.png"
-       You can rename files and update the src paths below accordingly. -->
-
   <!-- Header -->
   <header role="banner" aria-label="ZepSwipe header">
-    <div class="brand" aria-hidden="true">
-      <img src="zep-logo.png" alt="ZepSwipe logo (replace zep-logo.png with your file)"/>
+    <div class="brand" aria-hidden="false">
+      <!-- Inline SVG logo (neon gradient) -->
+      <span class="logo-svg" aria-hidden="true">
+        <svg viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ZepSwipe logo">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#00f0ff"/>
+              <stop offset="1" stop-color="#8e4bff"/>
+            </linearGradient>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- stylized Z mark -->
+          <g filter="url(#glow)">
+            <path d="M30 40 L140 40 Q150 40 150 50 L150 85 Q150 98 140 98 L80 160 Q72 168 60 168 L30 168"
+                  stroke="url(#g1)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <g transform="translate(150,60)">
+              <rect x="8" y="0" width="12" height="32" rx="6" fill="#00f0ff" opacity="0.92"/>
+              <rect x="26" y="6" width="8" height="22" rx="4" fill="#00f0ff" opacity="0.86"/>
+            </g>
+          </g>
+        </svg>
+      </span>
+
       <div class="title">ZepSwipe</div>
     </div>
 
     <div class="header-actions">
-      <!-- Connect Wallet should link to login.html per your request -->
+      <!-- Connect Wallet links to login.html per your earlier request -->
       <a href="login.html" class="connect-btn" aria-label="Connect wallet (go to login)">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" stroke="#001" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="6" width="20" height="12" rx="2" stroke="#001" stroke-width="1.2"/></svg>
         Connect Wallet
       </a>
     </div>
   </header>
 
-  <!-- Main -->
+  <!-- Main content -->
   <main>
-    <!-- Left hero content -->
-    <div class="hero-left">
-      <h1>Acquire digital skills while you earn ZAC</h1>
+    <!-- Left hero -->
+    <div class="hero-left" aria-labelledby="hero-heading">
+      <h1 id="hero-heading">Acquire digital skills while you earn ZAC</h1>
       <p>Complete micro-modules — AI tasks, no-code automations, content creation and more — and earn ZAC as you level up. Build products, sell on ZepShop and start freelancing from campus.</p>
 
       <div class="cta-row" role="region" aria-label="Primary calls to action">
@@ -272,61 +303,65 @@
       </div>
 
       <div class="glass-pulse" aria-hidden="true" style="width:160px;height:160px;margin-top:28px">
-        <!-- small decorative student icon -->
-        <svg width="84" height="84" viewBox="0 0 24 24" fill="none"><path d="M12 2C9.2 2 7 4.2 7 7s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6H4z" fill="rgba(255,255,255,0.96)"/></svg>
+        <svg width="84" height="84" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C9.2 2 7 4.2 7 7s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zM4 20c0-3.3 3.6-6 8-6s8 2.7 8 6H4z" fill="rgba(255,255,255,0.96)"/></svg>
       </div>
 
       <div class="coming-soon" id="modules">ZEP SHOP MARKETPLACE — COMING SOON</div>
     </div>
 
-    <!-- Right visual: 3D neon student + device mock -->
-    <aside class="visual" aria-hidden="false">
+    <!-- Right visual -->
+    <aside class="visual" aria-label="Visual: student creator & dashboard">
       <div class="card" role="img" aria-label="3D neon African student creator mockup">
-        <div class="student-3d" aria-hidden="true">
-          <!-- Replace src with your real 3D neon portrait (student-creator.png) -->
-          <img src="student-creator.png" alt="Student creator (replace student-creator.png)"/>
+
+        <div class="student-3d" aria-hidden="false">
+          <!-- NOTE:
+               Place your actual portrait file named "student-creator.png" in same folder OR
+               update src to the correct filename. If image is broken, the alt text will display to indicate replacement needed.
+          -->
+          <img src="student-creator.png" alt="Student creator portrait — replace student-creator.png with your image file" />
         </div>
 
-        <!-- phone / mini dashboard -->
+        <!-- Device mockup -->
         <div class="device-mock" aria-hidden="true">
-          <div class="device-card">
+          <div class="device-card" role="presentation">
             <div class="balance">
               <div class="label">Balance</div>
               <div class="amount">1,280 ZAC</div>
             </div>
 
-            <div class="device-actions" role="group" aria-label="Student device actions">
-              <!-- Earn & ZepShop buttons per request link to login.html -->
-              <a href="login.html" class="device-btn" style="display:block;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;color:#001;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-violet))">Earn</a>
-              <a href="login.html" class="device-btn" style="display:block;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;color:#fff;background:linear-gradient(90deg,#2a3b6a,#3d2a9f)">ZepShop</a>
+            <div class="device-actions" role="group" aria-label="Device actions">
+              <!-- Earn & ZepShop buttons link to login.html per your earlier instruction -->
+              <a href="login.html" class="device-earn" style="display:block;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;color:#001;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-violet))">Earn</a>
+              <a href="login.html" class="device-shop" style="display:block;text-align:center;padding:12px;border-radius:12px;text-decoration:none;font-weight:700;color:#fff;background:linear-gradient(90deg,#2a3b6a,#3d2a9f)">ZepShop</a>
             </div>
           </div>
         </div>
+
       </div>
     </aside>
   </main>
 
-  <!-- Footer with your social links -->
+  <!-- Footer with updated social links -->
   <footer>
     <div class="socials" role="navigation" aria-label="ZepSwipe social links">
       <a href="https://www.linkedin.com/company/zep-swipe/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn — ZepSwipe">
-        <!-- LinkedIn icon -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v14H0zM7.5 8h4.6v1.9h.1c.6-1.1 2.1-2.2 4.3-2.2 4.6 0 5.5 3 5.5 6.8V22H17.7v-6.6c0-1.6 0-3.7-2.3-3.7-2.3 0-2.7 1.8-2.7 3.6V22H7.5V8z" fill="currentColor"/></svg>
+        <!-- LinkedIn -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v14H0zM7.5 8h4.6v1.9h.1c.6-1.1 2.1-2.2 4.3-2.2 4.6 0 5.5 3 5.5 6.8V22H17.7v-6.6c0-1.6 0-3.7-2.3-3.7-2.3 0-2.7 1.8-2.7 3.6V22H7.5V8z" fill="currentColor"/></svg>
       </a>
 
       <a href="https://www.instagram.com/zepswipe?igsh=bXF3anMxODhxZWFs" target="_blank" rel="noopener noreferrer" aria-label="Instagram — ZepSwipe">
-        <!-- Instagram icon -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5.5a4 4 0 100 8 4 4 0 000-8zm6.4-.9a1.1 1.1 0 11-2.2 0 1.1 1.1 0 012.2 0zM12 9a3 3 0 110 6 3 3 0 010-6z" fill="currentColor"/></svg>
+        <!-- Instagram -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5.5a4 4 0 100 8 4 4 0 000-8zm6.4-.9a1.1 1.1 0 11-2.2 0 1.1 1.1 0 012.2 0zM12 9a3 3 0 110 6 3 3 0 010-6z" fill="currentColor"/></svg>
       </a>
 
       <a href="https://x.com/ZepSwipe?t=r94a0_pgN7ew1xT5L4eOSA&s=09" target="_blank" rel="noopener noreferrer" aria-label="X/Twitter — ZepSwipe">
-        <!-- X icon -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M22 3.1a1.2 1.2 0 00-1.1-.9H3.1a1.2 1.2 0 00-1.1.9 1.1 1.1 0 00.2.9l3.3 4.4L3.3 17.3a1.1 1.1 0 00.3 1.1 1.2 1.2 0 00.9.3h15.8a1.2 1.2 0 001.1-.9 1.1 1.1 0 00-.3-1.1L19 12l3-4.9c.2-.2.3-.6.3-.8z" fill="currentColor"/></svg>
+        <!-- X -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 3.1a1.2 1.2 0 00-1.1-.9H3.1a1.2 1.2 0 00-1.1.9 1.1 1.1 0 00.2.9l3.3 4.4L3.3 17.3a1.1 1.1 0 00.3 1.1 1.2 1.2 0 00.9.3h15.8a1.2 1.2 0 001.1-.9 1.1 1.1 0 00-.3-1.1L19 12l3-4.9c.2-.2.3-.6.3-.8z" fill="currentColor"/></svg>
       </a>
 
-      <a href="https://x.com/ZepSwipe?t=r94a0_pgN7ew1xT5L4eOSA&s=09" target="_blank" rel="noopener noreferrer" aria-label="Facebook (provided link added) — ZepSwipe">
-        <!-- Facebook icon (using provided X link as requested) -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.33 2 2 6.48 2 12.07 2 17.06 5.66 21.17 10.44 22v-6.99H7.9v-3.01h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.45h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 3.01h-2.3V22C18.34 21.17 22 17.06 22 12.07z" fill="currentColor"/></svg>
+      <!-- Facebook link provided is the same X link per your earlier input. Keeping that as requested. -->
+      <a href="https://x.com/ZepSwipe?t=r94a0_pgN7ew1xT5L4eOSA&s=09" target="_blank" rel="noopener noreferrer" aria-label="Facebook — ZepSwipe (provided link)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.33 2 2 6.48 2 12.07 2 17.06 5.66 21.17 10.44 22v-6.99H7.9v-3.01h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.45h-1.25c-1.23 0-1.61.77-1.61 1.56v1.87h2.74l-.44 3.01h-2.3V22C18.34 21.17 22 17.06 22 12.07z" fill="currentColor"/></svg>
       </a>
     </div>
 
