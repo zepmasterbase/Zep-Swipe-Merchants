@@ -325,6 +325,27 @@
         <div class="device-mock" aria-hidden="true">
           <div class="device-card" role="presentation">
             <div class="balance">
+
+              <!-- === REPLACED: SVG light image added above the Balance label === -->
+              <!-- small inline glowing light / spark SVG -->
+              <svg width="56" height="56" viewBox="0 0 24 24" aria-hidden="true" style="margin-bottom:6px;filter:drop-shadow(0 8px 20px rgba(0,240,255,0.12))">
+                <defs>
+                  <linearGradient id="sparkG" x1="0" x2="1">
+                    <stop offset="0" stop-color="#00f0ff"/>
+                    <stop offset="1" stop-color="#8e4bff"/>
+                  </linearGradient>
+                  <filter id="sparkGlow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                <g filter="url(#sparkGlow)">
+                  <circle cx="12" cy="7" r="4" fill="url(#sparkG)" opacity="0.95"/>
+                  <path d="M12 0v-0.5M12 20v4M0 12H-4M24 12h4M4.2 4.2L1.6 1.6M22.4 22.4l-2.6-2.6M4.2 19.8L1.6 22.4M22.4 1.6l-2.6 2.6" stroke="url(#sparkG)" stroke-width="0.8" stroke-linecap="round" opacity="0.9" transform="translate(0 0)"/>
+                </g>
+              </svg>
+              <!-- === end replacement === -->
+
               <div class="label">Balance</div>
               <div class="amount">1,280 ZAC</div>
             </div>
