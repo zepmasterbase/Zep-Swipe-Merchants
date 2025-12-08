@@ -18,6 +18,7 @@
       --muted: rgba(190,210,255,0.12);
       --white: #ffffff;
       --radius: 18px;
+      --max-width: 1200px;
     }
 
     /* Reset + base */
@@ -26,7 +27,8 @@
     body{
       margin:0;
       font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(14,20,40,1) 0%, rgba(3,6,18,1) 50%, rgba(0,0,0,1) 100%);
+      background:
+       radial-gradient(1200px 600px at 10% 10%, rgba(7,16,40,1) 0%, rgba(3,6,18,1) 50%, rgba(0,0,0,1) 100%);
       color:var(--white);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
@@ -34,7 +36,10 @@
       min-height:100vh;
       flex-direction:column;
       align-items:center;
+      padding-bottom:48px;
     }
+
+    a{color:inherit}
 
     /* Header */
     header{
@@ -107,6 +112,8 @@
       text-decoration:none;
       cursor:pointer;
       transition:transform .18s ease, box-shadow .18s ease;
+      font-family: "Poppins", sans-serif;
+      font-size:14px;
     }
     .connect:active{transform:translateY(1px)}
     .connect .dot{
@@ -116,7 +123,7 @@
     /* Container hero */
     main.hero-wrap{
       width:100%;
-      max-width:1200px;
+      max-width:var(--max-width);
       margin-top:120px;
       display:grid;
       grid-template-columns: 1fr 420px;
@@ -168,6 +175,7 @@
       box-shadow:0 12px 40px rgba(0,240,255,0.12);
       transition:transform .12s;
       font-family:"Orbitron";
+      font-size:15px;
     }
     .btn-primary:active{transform:translateY(2px)}
 
@@ -180,6 +188,7 @@
       text-decoration:none;
       font-weight:600;
       transition:all .12s;
+      font-size:14px;
     }
     .btn-outline:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
 
@@ -242,6 +251,8 @@
       padding:14px 18px;border-radius:12px;border:0;font-weight:700;color:#001;
       background:linear-gradient(90deg,var(--neon-cyan),var(--neon-violet));
       cursor:pointer;box-shadow:0 10px 30px rgba(0,240,255,0.08);
+      font-family:"Poppins";
+      font-size:15px;
     }
     .device .actions .shop{
       background:linear-gradient(90deg,#2a3b6a,#3d2a9f);
@@ -289,6 +300,17 @@
       .btn-primary{padding:10px 16px;font-size:14px}
       .glass-pulse{width:140px;height:140px}
     }
+
+    /* Accessibility: focus states */
+    a:focus, button:focus {
+      outline: 3px solid rgba(0,240,255,0.18);
+      outline-offset: 3px;
+    }
+
+    /* Reduced motion: respect user pref */
+    @media (prefers-reduced-motion: reduce) {
+      .glass-pulse, header, nav, .brand .title { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -296,7 +318,7 @@
   <!-- header -->
   <header role="banner" aria-label="ZepSwipe header">
     <div class="brand" aria-hidden="true">
-      <div class="logo-wrap"><span>Z</span></div>
+      <div class="logo-wrap" aria-hidden="true"><span>Z</span></div>
       <div class="title">ZepSwipe</div>
     </div>
 
@@ -318,12 +340,12 @@
 
       <div class="hero-cta">
         <!-- Get started links to login.html -->
-        <a href="login.html" class="btn-primary" role="button">Get Started</a>
-        <a href="#learn" class="btn-outline">Browse modules</a>
+        <a href="login.html" class="btn-primary" role="button" aria-label="Get started (go to login)">Get Started</a>
+        <a href="#learn" class="btn-outline" role="button" aria-label="Browse modules">Browse modules</a>
       </div>
 
       <div class="glass-pulse" role="img" aria-label="ZepSwipe students icon">
-        <!-- simple student svg icon -->
+        <!-- student SVG icon -->
         <svg width="96" height="96" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2C9.25 2 7 4.25 7 7C7 9.75 9.25 12 12 12C14.75 12 17 9.75 17 7C17 4.25 14.75 2 12 2Z" fill="#ffffff" fill-opacity="0.95"/>
           <path d="M4 20C4 16.7 7.6 14.5 12 14.5C16.4 14.5 20 16.7 20 20V22H4V20Z" fill="#ffffff" fill-opacity="0.9"/>
@@ -336,19 +358,20 @@
     <!-- right - device mock -->
     <aside class="hero-right" aria-hidden="false">
       <div class="device" role="img" aria-label="ZepSwipe student dashboard mockup">
-        <div class="top">
+        <div class="top" aria-hidden="true">
           <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-violet));display:grid;place-items:center;color:#001;font-weight:700">Z</div>
         </div>
 
-        <div class="balance" style="margin-bottom:12px">
+        <div class="balance" style="margin-bottom:12px" aria-live="polite">
           <div style="font-size:12px;color:rgba(230,240,255,0.75);font-weight:600">Balance</div>
           <div class="amount">1,280 ZAC</div>
         </div>
 
         <div class="actions" role="group" aria-label="device actions" style="margin-top:8px">
-          <!-- Withdraw -> Earn, Deposit -> ZepShop per request -->
-          <button type="button" onclick="location.href='login.html'">Earn</button>
-          <button type="button" class="shop" onclick="location.href='login.html'">ZepShop</button>
+          <!-- Earn -> login.html -->
+          <button type="button" onclick="location.href='login.html'" aria-label="Earn (go to login)">Earn</button>
+          <!-- ZepShop -> login.html -->
+          <button type="button" class="shop" onclick="location.href='login.html'" aria-label="ZepShop (go to login)">ZepShop</button>
         </div>
       </div>
     </aside>
@@ -357,21 +380,35 @@
   <!-- footer -->
   <footer role="contentinfo">
     <div class="socials" aria-hidden="true">
-      <a href="https://t.me/zepswipe" target="_blank" rel="noopener noreferrer" aria-label="ZepSwipe Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 3L3 10.5L10 13.5L12 21L14.5 13.5L21 3Z" fill="currentColor"/></svg></a>
-      <a href="#" aria-label="ZepSwipe Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.2"/></svg></a>
-      <a href="#" aria-label="ZepSwipe Twitter/X"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 21c6 0 9.5-5 9.5-9.2V9.5C12.2 8.9 14.2 7 17 7c1 0 2-.1 3-.6-1 .9-2 1.5-3 1.6 1.1-.6 1.9-1.6 2.3-2.7-1 .7-2 1.2-3.1 1.5z" fill="currentColor"/></svg></a>
+      <a href="https://t.me/zepswipe" target="_blank" rel="noopener noreferrer" aria-label="ZepSwipe Telegram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 3L3 10.5L10 13.5L12 21L14.5 13.5L21 3Z" fill="currentColor"/></svg>
+      </a>
+      <a href="#" aria-label="ZepSwipe Instagram">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.2"/></svg>
+      </a>
+      <a href="#" aria-label="ZepSwipe Twitter/X">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 21c6 0 9.5-5 9.5-9.2V9.5C12.2 8.9 14.2 7 17 7c1 0 2-.1 3-.6-1 .9-2 1.5-3 1.6 1.1-.6 1.9-1.6 2.3-2.7-1 .7-2 1.2-3.1 1.5z" fill="currentColor"/></svg>
+      </a>
     </div>
 
     <p>© <span id="year"></span> ZepSwipe — All rights reserved</p>
   </footer>
 
   <script>
-    // small behaviour: year + accessible focus
+    // Put the current year
     document.getElementById('year').textContent = new Date().getFullYear();
-    // prefer reduced-motion: avoid animation for those users
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+
+    // Respect reduced motion users
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.documentElement.style.setProperty('animation', 'none');
     }
+
+    // Small keyboard accessibility enhancement for "Connect Wallet" link on Enter
+    document.querySelectorAll('.connect').forEach(el=>{
+      el.addEventListener('keypress', (e)=> {
+        if(e.key === 'Enter' || e.key === ' ') el.click();
+      });
+    });
   </script>
 </body>
 </html>
