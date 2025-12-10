@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Zep Swipe — Gig Detail</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<!-- Tailwind CDN (for layout helpers) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Ethers for on-chain reads (balance display) -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
+
+<style>
+  :root{
+    --zep-blue: #00f0ff;
+    --zep-violet:#9c4dff;
+    --zep-lime:#a6ff00;
+    --glass: rgba(255,255,255,0.06);
+    --bg: radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
+  }
+  html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto;overflow-x:hidden;}
+  body{
+    background:var(--bg); color:#fff;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    padding-bottom:92px;
+  }
+
+  /* Header */
+  .header {
+    margin:18px; padding:14px 18px; border-radius:14px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.06);
+    display:flex;justify-content:space-between;align-items:center; gap:12px;
+    box-shadow:0 6px 30px rgba(0,240,255,0.06);
+    animation: headerGlow 3.5s ease-in-out infinite alternate;
+  }
+  @keyframes headerGlow{
+    0%{ box-shadow:0 6px 18px rgba(0,240,255,0.06);}
+    100%{ box-shadow:0 10px 45px rgba(156,77,255,0.12);}
+  }
+  .brand {
+    font-family:Orbitron, sans-serif; font-weight:700; letter-spacing:0.6px;
+    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-size:1.1rem;
+  }
+  .brand-sub{
+    font-size:.86rem;
+    color:rgba(255,255,255,0.82);
+  }
+
+  .back-btn {
+    background:transparent; border:none; cursor:pointer; padding:8px 12px; border-radius:10px;
+    display:flex;align-items:center;gap:6px;
+    color:rgba(255,255,255,0.9);
+    border:1px solid rgba(255,255,255,0.08);
+    font-size:.85rem;
+  }
+
+  /* Glass card */
+  .glass {
+    margin:12px; padding:18px; border-radius:14px;
+    background:var(--glass); border:1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px); box-shadow:0 8px 40px rgba(0,240,255,0.06);
+  }
+
+  .neon-title{
+    font-family:Orbitron, sans-serif; font-weight:700;
+    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-size:1.05rem;
+    text-shadow:0 0 12px rgba(0,240,255,0.12);
+  }
+  .muted{opacity:.8;font-size:.9rem;}
+
+  .wallet-row{ display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .wallet-balance{ font-family:Orbitron; font-size:1.7rem; margin-top:6px; }
+
+  /* Layout */
+  .page{
+    max-width:1120px;margin:0 auto;padding:4px 6px 16px 6px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:2fr 0.95fr;
+    gap:14px;
+  }
+  @media(max-width:900px){
+    .grid{grid-template-columns:1fr;}
+  }
+
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    padding:5px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,0.16);
+    font-size:.78rem;
+    color:rgba(255,255,255,0.9);
+  }
+
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    padding:4px 9px;
+    border-radius:999px;
+    font-size:.77rem;
+    background:rgba(156,77,255,0.18);
+    color:#e4cffd;
+  }
+
+  .tag-pill{
+    display:inline-flex;
+    align-items:center;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:.75rem;
+    background:rgba(0,240,255,0.12);
+    color:#c8f8ff;
+    margin-right:4px;
+    margin-bottom:4px;
+  }
+
+  .btn-primary{
+    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+    border:none;border-radius:999px;
+    padding:9px 18px;
+    color:#050018;
+    font-family:Orbitron, sans-serif;
+    font-size:.85rem;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    box-shadow:0 10px 30px rgba(156,77,255,0.25);
+  }
+  .btn-ghost{
+    background:transparent;
+    border-radius:999px;
+    padding:8px 14px;
+    border:1px solid rgba(255,255,255,0.25);
+    color:rgba(255,255,255,0.85);
+    cursor:pointer;
+    font-size:.85rem;
+  }
+
+  .side-card{
+    border-radius:12px;
+    padding:12px 14px;
+    border:1px solid rgba(255,255,255,0.08);
+    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+    margin-bottom:10px;
+  }
+
+  .mini-label{
+    font-size:.78rem;
+    color:rgba(255,255,255,0.7);
+  }
+
+  footer.page-foot{
+    max-width:1120px;margin:6px auto 0 auto;
+    padding:6px 6px 80px 6px;
+    font-size:.8rem;color:rgba(255,255,255,0.65);
+    text-align:center;
+  }
+
+  /* Footer nav (as dashboard) */
+  .footer {
+    position:fixed; bottom:0; left:0; right:0; height:72px;
+    display:flex; align-items:center; justify-content:space-around;
+    background:linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.45));
+    border-top:1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(8px);
+  }
+  .nav-btn { width:56px; height:56px; border-radius:14px; display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04);
+    box-shadow:0 6px 20px rgba(0,240,255,0.04); transition:transform .15s, box-shadow .15s; cursor:pointer;
+  }
+  .nav-btn:hover{ transform:translateY(-6px); box-shadow:0 20px 60px rgba(156,77,255,0.12); }
+  .nav-svg { width:26px; height:26px; filter:drop-shadow(0 0 8px rgba(0,240,255,0.4)); }
+
+  @media(max-width:640px){
+    .glass{margin:10px;}
+    .wallet-balance{font-size:1.5rem;}
+    .brand-sub{display:none;}
+  }
+</style>
+</head>
+
+<body>
+  <!-- Header -->
+  <div class="header glass">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div>
+        <div class="brand">Swipe Merchants</div>
+        <div class="brand-sub">Gig Detail</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="back-btn" type="button" onclick="window.history.back()">
+        ← Back
+      </button>
+    </div>
+  </div>
+
+  <!-- Wallet overview -->
+  <div class="glass">
+    <div class="wallet-row">
+      <div>
+        <div class="neon-title">Connected Wallet</div>
+        <div id="walletAddress" class="muted mt-1">—</div>
+      </div>
+      <div class="text-right">
+        <div class="muted text-sm">ZAC Balance</div>
+        <div id="zacBalance" class="wallet-balance">0 ZAC</div>
+        <div id="usdValue" class="muted text-xs mt-1">≈ $0.00</div>
+        <div class="muted text-[0.75rem] mt-1">Base Mainnet</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="page">
+    <section class="grid">
+      <!-- LEFT: Gig content -->
+      <section class="glass" style="margin:0;">
+        <div id="gigMain">
+          <!-- filled by JS -->
+        </div>
+      </section>
+
+      <!-- RIGHT: Meta & CTA -->
+      <aside>
+        <div class="side-card">
+          <div class="neon-title" style="font-size:.95rem;">Order Summary</div>
+          <div id="priceBlock" class="mt-2" style="font-size:.9rem;">
+            <!-- price / delivery injected here -->
+          </div>
+          <div class="mt-3">
+            <button id="requestGigBtn" class="btn-primary" type="button" style="width:100%;justify-content:center;">
+              📩 Request this Gig
+            </button>
+          </div>
+          <div class="muted" style="font-size:.78rem;margin-top:6px;">
+            For now, requests are stored locally in your browser. Later, connect to Slim.jo / backend to notify the seller and start chat.
+          </div>
+        </div>
+
+        <div class="side-card">
+          <div class="neon-title" style="font-size:.95rem;">Gig Owner</div>
+          <div id="ownerWalletShort" class="mt-2" style="font-size:.85rem;"></div>
+          <div class="mini-label mt-1">Wallet on Base.</div>
+          <div class="mini-label mt-2">
+            In the full version, this section can show profile info, ratings, and response time.
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <footer class="page-foot">
+    Zep Swipe · Swipe Merchants gig detail · Local prototype (no live messaging yet).
+  </footer>
+
+  <!-- Footer nav -->
+  <div class="footer">
+    <!-- POS / Home icon -->
+    <div class="nav-btn" title="POS" onclick="location.href='pos.html'">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/>
+          </linearGradient>
+        </defs>
+        <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor"/>
+        <path d="M7 8h10" stroke="currentColor" stroke-linecap="round"/>
+        <rect x="7" y="16" width="10" height="4" rx="1" stroke="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- Add / Listing -->
+    <div class="nav-btn" title="Add Listing" onclick="location.href='create-gig.html'">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g2)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
+        <circle cx="12" cy="12" r="9" stroke="currentColor"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- Wallet -->
+    <div class="nav-btn" title="Wallet" onclick="location.href='wallet.html'">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g3)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g3" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
+        <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor"/>
+        <circle cx="18" cy="12" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- Profile -->
+    <div class="nav-btn" title="Profile" onclick="location.href='profile.html'">
+      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g4)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g4" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
+        <circle cx="12" cy="8" r="3" stroke="currentColor"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor"/>
+      </svg>
+    </div>
+  </div>
+
+<script>
+/* -------------------------------
+   Config & helpers
+   ------------------------------- */
+const ZAC_TOKEN_ADDRESS = "0xfe4119a9cac1425d808526905e92386b4234bf2a"; // your ZAC token on Base
+const tokenABI = [
+  "function balanceOf(address owner) view returns (uint256)",
+  "function decimals() view returns (uint8)"
+];
+const GIGS_KEY = 'zepswipe_gigs_v1';
+const REQUESTS_KEY = 'zepswipe_gig_requests_v1';
+const SIMULATED_ZAC_PRICE_USD = 0.15;
+
+const CATEGORY_LABELS = {
+  'ai_prompt': 'AI Prompt Engineering',
+  'ai_content': 'AI Content Generation',
+  'social_design': 'Social Design (No-code)',
+  'chatbot_builder': 'Chatbot Builder',
+  'nocode_web': 'No-code Websites',
+  'micro_video': 'Micro Video Editor',
+  'research_leads': 'Research & Lead Gen',
+  'micro_automation': 'Micro-Automation'
+};
+
+/* -------------------------------
+   Auth check
+   ------------------------------- */
+function requireAuth(){
+  const user = JSON.parse(localStorage.getItem('zepUser'));
+  if(!user || !user.loggedIn || !user.wallet){
+    window.location.href = 'login.html';
+    return null;
+  }
+  return user;
+}
+
+/* -------------------------------
+   Wallet display
+   ------------------------------- */
+async function renderUser(){
+  const user = requireAuth();
+  if(!user) return;
+
+  const walletEl = document.getElementById('walletAddress');
+  walletEl.textContent = `${user.wallet.slice(0,6)}...${user.wallet.slice(-4)}`;
+
+  try{
+    const provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
+    const contract = new ethers.Contract(ZAC_TOKEN_ADDRESS, tokenABI, provider);
+    const decimals = await contract.decimals();
+    const raw = await contract.balanceOf(user.wallet);
+    const formatted = Number(ethers.formatUnits(raw, decimals));
+    document.getElementById('zacBalance').textContent = `${formatted.toFixed(2)} ZAC`;
+    document.getElementById('usdValue').textContent = `≈ $${(formatted * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
+  } catch(err){
+    console.warn('ZAC fetch failed, using test credit', err);
+    const fallback = Number(localStorage.getItem('zacBalance') || 25);
+    document.getElementById('zacBalance').textContent = `${fallback} ZAC (Test)`;
+    document.getElementById('usdValue').textContent = `≈ $${(fallback * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
+  }
+}
+
+/* -------------------------------
+   Wallet listeners
+   ------------------------------- */
+function setupWalletListeners(){
+  if(window.ethereum){
+    try{
+      window.ethereum.on && window.ethereum.on('accountsChanged', (accounts) => {
+        if(!accounts || accounts.length === 0){
+          localStorage.removeItem('zepUser');
+          window.location.href = 'login.html';
+        } else {
+          const user = JSON.parse(localStorage.getItem('zepUser') || '{}');
+          user.wallet = accounts[0];
+          localStorage.setItem('zepUser', JSON.stringify(user));
+          renderUser();
+        }
+      });
+      window.ethereum.on && window.ethereum.on('chainChanged', () => {
+        renderUser();
+      });
+    } catch(e){ console.warn('wallet listener failed', e); }
+  }
+}
+
+/* -------------------------------
+   Data helpers
+   ------------------------------- */
+function getQueryId(){
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id') || '';
+}
+
+function readGigs(){
+  try{ return JSON.parse(localStorage.getItem(GIGS_KEY)) || []; }
+  catch(e){ return []; }
+}
+
+function readRequests(){
+  try{ return JSON.parse(localStorage.getItem(REQUESTS_KEY)) || []; }
+  catch(e){ return []; }
+}
+function writeRequests(reqs){
+  localStorage.setItem(REQUESTS_KEY, JSON.stringify(reqs));
+}
+
+/* -------------------------------
+   Render Gig
+   ------------------------------- */
+let currentGig = null;
+
+function renderGig(){
+  const id = getQueryId();
+  const gigs = readGigs();
+  const gig = gigs.find(g => g.id === id);
+  currentGig = gig || null;
+
+  const main = document.getElementById('gigMain');
+  const priceBlock = document.getElementById('priceBlock');
+  const ownerEl = document.getElementById('ownerWalletShort');
+
+  if(!gig){
+    main.innerHTML = '<div class="muted">Gig not found. It may have been removed in this browser.</div>';
+    priceBlock.textContent = '';
+    ownerEl.textContent = '—';
+    document.getElementById('requestGigBtn').disabled = true;
+    return;
+  }
+
+  const categoryLabel = CATEGORY_LABELS[gig.category] || gig.category;
+  const tagsHtml = (gig.tags || []).map(t => `<span class="tag-pill">#${t}</span>`).join('');
+
+  const createdAt = gig.createdAt ? new Date(gig.createdAt).toLocaleString() : '';
+
+  main.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+      <div>
+        <h1 style="font-size:1.2rem;font-weight:600;margin-bottom:4px;">${gig.title}</h1>
+        <div class="muted" style="font-size:.9rem;">${gig.tagline || ''}</div>
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="pill">Category: ${categoryLabel}</span>
+          <span class="pill">Level: ${gig.level}</span>
+          <span class="status-pill">${gig.status === 'live' ? 'Live' : 'Draft'}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="neon-title" style="font-size:.95rem;">What you get</div>
+      <p class="muted" style="margin-top:6px;white-space:pre-wrap;">${gig.description}</p>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="neon-title" style="font-size:.95rem;">Tags</div>
+      <div style="margin-top:6px;">${tagsHtml || '<span class="muted" style="font-size:.8rem;">No tags added yet.</span>'}</div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="neon-title" style="font-size:.95rem;">Meta</div>
+      <div class="muted" style="font-size:.8rem;margin-top:4px;">
+        Delivery: <strong>${gig.delivery}</strong><br/>
+        Created: ${createdAt || '—'}<br/>
+        Gig ID: ${gig.id}
+      </div>
+    </div>
+  `;
+
+  const priceUsd = (gig.priceZac || 0) * SIMULATED_ZAC_PRICE_USD;
+  priceBlock.innerHTML = `
+    <div class="mini-label">Price</div>
+    <div style="font-family:Orbitron;font-size:1.2rem;margin-top:3px;">
+      ${gig.priceZac} ZAC
+    </div>
+    <div class="muted" style="font-size:.8rem;margin-top:2px;">
+      ≈ $${priceUsd.toFixed(2)} (simulated, final price updates on token launch).
+    </div>
+    <div class="mini-label" style="margin-top:8px;">Delivery Time</div>
+    <div style="font-size:.9rem;margin-top:2px;">${gig.delivery}</div>
+  `;
+
+  const ownerShort = gig.ownerWallet
+    ? gig.ownerWallet.slice(0,6) + '...' + gig.ownerWallet.slice(-4)
+    : 'Unknown';
+
+  ownerEl.textContent = ownerShort;
+}
+
+/* -------------------------------
+   Request gig (local only)
+   ------------------------------- */
+function setupRequestButton(){
+  const btn = document.getElementById('requestGigBtn');
+  btn.addEventListener('click', ()=>{
+    const user = requireAuth();
+    if(!user) return;
+    if(!currentGig){
+      alert('Gig not loaded.');
+      return;
+    }
+
+    // Prevent requesting own gig (optional)
+    if(currentGig.ownerWallet && currentGig.ownerWallet.toLowerCase() === user.wallet.toLowerCase()){
+      if(!confirm('This gig belongs to your own wallet. Continue anyway (for testing)?')) return;
+    }
+
+    const requests = readRequests();
+    const existing = requests.find(r => r.gigId === currentGig.id && r.buyerWallet === user.wallet);
+    if(existing){
+      alert('You already created a request for this gig (locally).');
+      return;
+    }
+
+    const req = {
+      id: 'req_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+      gigId: currentGig.id,
+      buyerWallet: user.wallet,
+      sellerWallet: currentGig.ownerWallet || '',
+      createdAt: Date.now(),
+      status: 'open',
+      note: ''
+    };
+    requests.push(req);
+    writeRequests(requests);
+
+    alert('Request created locally. In the full version, this will notify the seller and open a chat.');
+  });
+}
+
+/* -------------------------------
+   Init
+   ------------------------------- */
+window.addEventListener('load', async ()=>{
+  const user = requireAuth();
+  if(!user) return;
+  setupWalletListeners();
+  renderUser();
+  renderGig();
+  setupRequestButton();
+});
+</script>
+</body>
+</html>
