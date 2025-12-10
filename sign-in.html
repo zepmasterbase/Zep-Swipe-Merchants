@@ -96,9 +96,9 @@ async function connectWallet() {
 
     // FIX FOR MOBILE METAMASK — Give the browser time to return focus
     setTimeout(() => {
-      console.log("➡️ Redirecting to merchants-dashboard.html");
-      window.location.href = "merchants-dashboard.html";
-    }, 300); // 300ms works best on MetaMask mobile
+      console.log("➡️ Redirecting to swipe-merchants.html");
+      window.location.href = "swipe-merchants.html"; // 🔥 UPDATED
+    }, 300);
 
   } catch (err) {
     console.error("Login error:", err);
@@ -111,7 +111,7 @@ window.addEventListener("load", () => {
   const user = JSON.parse(localStorage.getItem("zepUser"));
   if (user && user.loggedIn) {
     setTimeout(() => {
-      window.location.href = "merchants-dashboard.html";
+      window.location.href = "swipe-merchants.html"; // 🔥 UPDATED
     }, 300);
   }
 });
