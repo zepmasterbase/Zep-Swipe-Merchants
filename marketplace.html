@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Marketplace — Zep Swipe</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
+
+<style>
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --glass:rgba(255,255,255,0.06);
+  --bg:radial-gradient(circle at 25% 10%, #020014 0%, #00000a 100%);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* Layout */
+.container{
+  max-width:1100px;
+  margin:28px auto 120px;
+  padding:16px;
+}
+
+/* Header */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px;
+  border-radius:18px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(16px);
+  box-shadow:0 0 32px rgba(0,240,255,0.18);
+}
+.brand{
+  font-family:'Orbitron';
+  font-size:1.5rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.header small{
+  opacity:.75;
+  font-size:12px;
+}
+
+/* Connect */
+.connect-btn{
+  padding:10px 18px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-family:'Orbitron';
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+  box-shadow:0 0 20px rgba(0,240,255,0.4);
+}
+
+/* Filters */
+.filters{
+  margin-top:22px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.filter{
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.04);
+  font-size:12px;
+  cursor:pointer;
+}
+.filter.active{
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+  font-family:'Orbitron';
+}
+
+/* Grid */
+.grid{
+  margin-top:24px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+
+/* Card */
+.card{
+  padding:18px;
+  border-radius:20px;
+  background:rgba(0,0,0,0.65);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(14px);
+  transition:.25s;
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 0 34px rgba(156,77,255,0.35);
+}
+.card h3{
+  margin:0;
+  font-family:'Orbitron';
+  font-size:1rem;
+}
+.card p{
+  font-size:12px;
+  opacity:.85;
+  margin:6px 0 10px;
+}
+.tag{
+  font-size:10px;
+  color:#a5f3fc;
+  margin-bottom:8px;
+}
+
+/* Seller */
+.seller{
+  font-size:11px;
+  opacity:.75;
+}
+
+/* Price */
+.price{
+  margin-top:10px;
+  font-family:'Orbitron';
+  font-size:1.1rem;
+}
+
+/* Buy */
+.buy-btn{
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-family:'Orbitron';
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+}
+
+/* Status */
+.status{
+  margin-top:8px;
+  font-size:12px;
+  opacity:.85;
+}
+
+/* Footer */
+.footer{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  padding:14px 22px;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(10px);
+  display:flex;
+  justify-content:space-around;
+}
+.fbtn{
+  width:56px;height:56px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="brand">Zep Swipe</div>
+      <small>Hire verified African student talent · Pay in USDC</small>
+    </div>
+    <button class="connect-btn" onclick="connectWallet()">Connect Wallet</button>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="filter active">All</div>
+    <div class="filter">AI</div>
+    <div class="filter">Design</div>
+    <div class="filter">Video</div>
+    <div class="filter">Automation</div>
+    <div class="filter">Research</div>
+  </div>
+
+  <!-- MARKET GRID -->
+  <div class="grid" id="market"></div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="fbtn" title="Marketplace">🛍</div>
+  <div class="fbtn" onclick="location.href='signin.html'" title="Sell">🎓</div>
+</div>
+
+<script>
+/* ---------------- CONFIG ---------------- */
+const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913"; // USDC Base
+const ABI = [
+  "function transfer(address to, uint256 amount) returns (bool)",
+  "function decimals() view returns (uint8)"
+];
+
+let provider, signer;
+
+/* ---------------- LISTINGS ---------------- */
+const listings = [
+  {
+    title:"AI Content Writer",
+    desc:"High-quality blog posts, LinkedIn content & SEO writing",
+    tag:"AI / Content",
+    price:25,
+    seller:"0xSELLER_WALLET_1"
+  },
+  {
+    title:"No-Code Automation",
+    desc:"Zapier, Airtable & micro-automation workflows",
+    tag:"Automation",
+    price:40,
+    seller:"0xSELLER_WALLET_2"
+  },
+  {
+    title:"Social Media Designer",
+    desc:"Canva designs, carousels & brand templates",
+    tag:"Design",
+    price:30,
+    seller:"0xSELLER_WALLET_3"
+  },
+  {
+    title:"Short-Form Video Editor",
+    desc:"Reels, TikToks & captions that convert",
+    tag:"Video",
+    price:35,
+    seller:"0xSELLER_WALLET_4"
+  }
+];
+
+const market=document.getElementById("market");
+
+/* Render */
+listings.forEach((l,i)=>{
+  const c=document.createElement("div");
+  c.className="card";
+  c.innerHTML=`
+    <div class="tag">${l.tag}</div>
+    <h3>${l.title}</h3>
+    <p>${l.desc}</p>
+    <div class="seller">Verified Zep Swipe Student</div>
+    <div class="price">${l.price} USDC</div>
+    <button class="buy-btn" onclick="buy(${i})">Buy Service</button>
+    <div class="status" id="status-${i}"></div>
+  `;
+  market.appendChild(c);
+});
+
+/* ---------------- WALLET ---------------- */
+async function connectWallet(){
+  if(!window.ethereum){
+    alert("Install MetaMask or Coinbase Wallet");
+    return;
+  }
+  provider = new ethers.BrowserProvider(window.ethereum);
+  await provider.send("eth_requestAccounts",[]);
+  signer = await provider.getSigner();
+  alert("Wallet connected");
+}
+
+/* ---------------- BUY ---------------- */
+async function buy(i){
+  if(!signer){
+    alert("Connect wallet first");
+    return;
+  }
+  const item=listings[i];
+  const status=document.getElementById(`status-${i}`);
+  try{
+    status.textContent="Processing payment...";
+    const token=new ethers.Contract(USDC,ABI,signer);
+    const dec=await token.decimals();
+    const amt=ethers.parseUnits(item.price.toString(),dec);
+    const tx=await token.transfer(item.seller,amt);
+    status.textContent="Confirming transaction...";
+    await tx.wait();
+    status.textContent="✅ Payment successful!";
+  }catch(e){
+    console.error(e);
+    status.textContent="❌ Transaction failed";
+  }
+}
+</script>
+
+</body>
+</html>
