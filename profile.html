@@ -1,728 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Zep Swipe — Profile</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Swipe Merchants — Verified Student Profile</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<!-- Tailwind CDN (layout helpers) -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Ethers for on-chain reads -->
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
 
 <style>
-  :root{
-    --zep-blue: #00f0ff;
-    --zep-violet:#9c4dff;
-    --zep-lime:#a6ff00;
-    --glass: rgba(255,255,255,0.06);
-    --bg: radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
-  }
-  html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto;overflow-x:hidden;}
-  body{
-    background:var(--bg); color:#fff;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-    padding-bottom:92px;
-  }
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --glass:rgba(255,255,255,0.06);
+  --bg:radial-gradient(circle at 20% 10%, #020014 0%, #00000a 100%);
+}
 
-  /* Header */
-  .header {
-    margin:18px; padding:14px 18px; border-radius:14px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-    backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.06);
-    display:flex;justify-content:space-between;align-items:center; gap:12px;
-    box-shadow:0 6px 30px rgba(0,240,255,0.06);
-    animation: headerGlow 3.5s ease-in-out infinite alternate;
-  }
-  @keyframes headerGlow{
-    0%{ box-shadow:0 6px 18px rgba(0,240,255,0.06);}
-    100%{ box-shadow:0 10px 45px rgba(156,77,255,0.12);}
-  }
-  .brand {
-    font-family:Orbitron, sans-serif; font-weight:700; letter-spacing:0.6px;
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    font-size:1.1rem;
-  }
-  .brand-sub{
-    font-size:.86rem;
-    color:rgba(255,255,255,0.82);
-  }
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  color:#fff;
+}
 
-  .back-btn {
-    background:transparent; border:none; cursor:pointer; padding:8px 12px; border-radius:10px;
-    display:flex;align-items:center;gap:6px;
-    color:rgba(255,255,255,0.9);
-    border:1px solid rgba(255,255,255,0.08);
-    font-size:.85rem;
-  }
+/* Layout */
+.container{
+  max-width:960px;
+  margin:24px auto 100px;
+  padding:16px;
+}
 
-  /* Glass card */
-  .glass {
-    margin:12px; padding:18px; border-radius:14px;
-    background:var(--glass); border:1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px); box-shadow:0 8px 40px rgba(0,240,255,0.06);
-  }
+/* Header */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px;
+  border-radius:16px;
+  background:var(--glass);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 0 35px rgba(0,240,255,0.25);
+}
+.logo{
+  font-family:'Orbitron';
+  font-size:1.5rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.homeBtn{
+  text-decoration:none;
+  font-family:Orbitron;
+  font-size:0.9rem;
+  color:#050015;
+  padding:10px 18px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+}
 
-  .neon-title{
-    font-family:Orbitron, sans-serif; font-weight:700;
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    font-size:1.05rem;
-    text-shadow:0 0 12px rgba(0,240,255,0.12);
-  }
-  .muted{opacity:.8;font-size:.9rem;}
+/* Profile Card */
+.profileCard{
+  margin-top:22px;
+  padding:22px;
+  border-radius:20px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(18px);
+  box-shadow:0 0 45px rgba(156,77,255,0.25);
+}
 
-  .wallet-row{ display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
-  .wallet-balance{ font-family:Orbitron; font-size:1.7rem; margin-top:6px; }
+/* Top Section */
+.profileTop{
+  display:flex;
+  gap:20px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.avatar{
+  width:110px;
+  height:110px;
+  border-radius:20px;
+  background:linear-gradient(135deg,var(--zep-blue),var(--zep-violet));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:Orbitron;
+  font-size:2.2rem;
+  color:#050015;
+}
+.profileInfo{
+  flex:1;
+}
+.name{
+  font-family:Orbitron;
+  font-size:1.4rem;
+}
+.meta{
+  font-size:0.95rem;
+  opacity:0.85;
+  margin-top:4px;
+}
+.verified{
+  margin-top:10px;
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+  font-family:Orbitron;
+  font-size:0.75rem;
+  font-weight:700;
+}
 
-  /* Layout */
-  .page{
-    max-width:1120px;margin:0 auto;padding:4px 6px 16px 6px;
-  }
+/* Section */
+.section{
+  margin-top:26px;
+}
+.sectionTitle{
+  font-family:Orbitron;
+  font-size:1.05rem;
+  margin-bottom:12px;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 
-  .grid{
-    display:grid;
-    grid-template-columns:1.15fr 1fr;
-    gap:14px;
-  }
-  @media(max-width:900px){
-    .grid{grid-template-columns:1fr;}
-  }
+/* Skills */
+.skills{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+}
+.skill{
+  padding:12px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  font-size:0.9rem;
+}
 
-  .avatar-circle{
-    width:70px;height:70px;border-radius:999px;
-    background:radial-gradient(circle at 30% 10%, rgba(255,255,255,0.2), transparent),
-               linear-gradient(135deg,var(--zep-blue),var(--zep-violet));
-    display:flex;align-items:center;justify-content:center;
-    font-size:32px;
-    box-shadow:0 10px 30px rgba(0,240,255,0.35);
-  }
+/* Services */
+.services{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+.service{
+  padding:16px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+}
+.service h4{
+  margin:0;
+  font-family:Orbitron;
+  font-size:1rem;
+}
+.price{
+  margin-top:8px;
+  font-family:Orbitron;
+  color:#00f0ff;
+}
 
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    padding:5px 10px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,0.16);
-    font-size:.78rem;
-    color:rgba(255,255,255,0.9);
-  }
+/* Hire Button */
+.hireBox{
+  margin-top:30px;
+  text-align:center;
+}
+.hireBtn{
+  padding:14px 28px;
+  font-family:Orbitron;
+  font-size:1rem;
+  font-weight:700;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+  box-shadow:0 0 35px rgba(0,240,255,0.45);
+}
 
-  .stat-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-    gap:10px;
-    margin-top:12px;
-  }
-  .stat-card{
-    border-radius:12px;
-    padding:10px 12px;
-    border:1px solid rgba(255,255,255,0.08);
-    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-  }
-  .stat-label{
-    font-size:.78rem;
-    color:rgba(255,255,255,0.7);
-  }
-  .stat-value{
-    font-family:Orbitron;
-    font-size:1.05rem;
-    margin-top:4px;
-  }
-
-  label span.required{color:#ff7b7b;font-size:.9em;}
-
-  .input, .select, .textarea{
-    width:100%;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.12);
-    background:rgba(5,0,30,0.68);
-    padding:9px 11px;
-    color:#fff;
-    font-size:.9rem;
-    outline:none;
-  }
-  .input:focus, .select:focus, .textarea:focus{
-    border-color:var(--zep-blue);
-    box-shadow:0 0 0 1px rgba(0,240,255,0.25);
-  }
-  .textarea{min-height:90px;resize:vertical;}
-  .hint{font-size:.8rem;opacity:.75;margin-top:3px;}
-
-  .role-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    padding:4px 9px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,0.16);
-    font-size:.78rem;
-    cursor:pointer;
-  }
-  .role-badge.active{
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    color:#050018;
-    border:none;
-  }
-
-  .btn-primary{
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    border:none;border-radius:999px;
-    padding:9px 18px;
-    color:#050018;
-    font-family:Orbitron, sans-serif;
-    font-size:.85rem;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    box-shadow:0 10px 30px rgba(156,77,255,0.25);
-  }
-  .btn-ghost{
-    background:transparent;
-    border-radius:999px;
-    padding:8px 14px;
-    border:1px solid rgba(255,255,255,0.25);
-    color:rgba(255,255,255,0.85);
-    cursor:pointer;
-    font-size:.85rem;
-  }
-
-  .side-card{
-    border-radius:12px;
-    padding:12px 14px;
-    border:1px solid rgba(255,255,255,0.08);
-    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-    margin-bottom:10px;
-  }
-
-  .mini-label{
-    font-size:.78rem;
-    color:rgba(255,255,255,0.7);
-  }
-
-  footer.page-foot{
-    max-width:1120px;margin:6px auto 0 auto;
-    padding:6px 6px 80px 6px;
-    font-size:.8rem;color:rgba(255,255,255,0.65);
-    text-align:center;
-  }
-
-  /* Footer nav */
-  .footer {
-    position:fixed; bottom:0; left:0; right:0; height:72px;
-    display:flex; align-items:center; justify-content:space-around;
-    background:linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.45));
-    border-top:1px solid rgba(255,255,255,0.04);
-    backdrop-filter: blur(8px);
-  }
-  .nav-btn { width:56px; height:56px; border-radius:14px; display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04);
-    box-shadow:0 6px 20px rgba(0,240,255,0.04); transition:transform .15s, box-shadow .15s; cursor:pointer;
-  }
-  .nav-btn:hover{ transform:translateY(-6px); box-shadow:0 20px 60px rgba(156,77,255,0.12); }
-  .nav-svg { width:26px; height:26px; filter:drop-shadow(0 0 8px rgba(0,240,255,0.4)); }
-
-  @media(max-width:640px){
-    .glass{margin:10px;}
-    .wallet-balance{font-size:1.5rem;}
-    .brand-sub{display:none;}
-  }
+/* Footer */
+.footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:12px;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(12px);
+  display:flex;
+  justify-content:center;
+  gap:20px;
+}
+.footer a{
+  color:#00f0ff;
+  font-family:Orbitron;
+  font-size:0.9rem;
+  text-decoration:none;
+}
 </style>
 </head>
 
 <body>
-  <!-- Header -->
-  <div class="header glass">
-    <div style="display:flex;gap:12px;align-items:center">
-      <div>
-        <div class="brand">Zep Swipe Profile</div>
-        <div class="brand-sub">Student identity, skills & marketplace presence</div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">Swipe Merchants</div>
+    <a href="index.html" class="homeBtn">Marketplace</a>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="profileCard">
+
+    <div class="profileTop">
+      <div class="avatar" id="avatar">S</div>
+
+      <div class="profileInfo">
+        <div class="name" id="name">Student Creator</div>
+        <div class="meta" id="university">University • Africa</div>
+        <div class="verified">✔ Verified Skill Wallet</div>
       </div>
     </div>
 
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="back-btn" type="button" onclick="window.history.back()">
-        ← Back
-      </button>
+    <!-- SKILLS -->
+    <div class="section">
+      <div class="sectionTitle">Verified Skills</div>
+      <div class="skills" id="skills"></div>
     </div>
+
+    <!-- SERVICES -->
+    <div class="section">
+      <div class="sectionTitle">Services Offered</div>
+      <div class="services" id="services"></div>
+    </div>
+
+    <!-- HIRE -->
+    <div class="hireBox">
+      <button class="hireBtn" onclick="hire()">Hire / Pay Securely</button>
+    </div>
+
   </div>
+</div>
 
-  <!-- Wallet overview -->
-  <div class="glass">
-    <div class="wallet-row">
-      <div>
-        <div class="neon-title">Connected Wallet</div>
-        <div id="walletAddress" class="muted mt-1">—</div>
-      </div>
-      <div class="text-right">
-        <div class="muted text-sm">ZAC Balance (view only)</div>
-        <div id="zacBalance" class="wallet-balance">0 ZAC</div>
-        <div id="usdValue" class="muted text-xs mt-1">≈ $0.00</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main content -->
-  <div class="page">
-    <section class="grid">
-      <!-- LEFT: Profile info & form -->
-      <section class="glass" style="margin:0;">
-        <div style="display:flex;gap:14px;align-items:center;">
-          <div id="avatar" class="avatar-circle">
-            <span id="avatarEmoji">👩🏾‍💻</span>
-          </div>
-          <div>
-            <div id="displayName" style="font-size:1.2rem;font-weight:600;">Student Name</div>
-            <div id="displayUniversity" class="muted" style="font-size:.86rem;margin-top:3px;">University / Campus</div>
-            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;font-size:.78rem;">
-              <span class="pill" id="roleLabel1">Student</span>
-              <span class="pill" id="roleLabel2">Creator</span>
-              <span class="pill" id="roleLabel3">Merchant</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-label">XP (Learn & Earn)</div>
-            <div id="xpValue" class="stat-value">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">ZAC Claimed (Learn & Earn)</div>
-            <div id="tokensValue" class="stat-value">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Skill Badges</div>
-            <div id="badgeCount" class="stat-value">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Marketplace Gigs</div>
-            <div id="gigCount" class="stat-value">0</div>
-          </div>
-        </div>
-
-        <form id="profileForm" style="margin-top:14px;">
-          <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px;">
-            <div>
-              <label class="block text-sm mb-1">Full Name <span class="required">*</span></label>
-              <input id="nameInput" type="text" class="input" placeholder="e.g. Ama Mensah" required />
-            </div>
-            <div>
-              <label class="block text-sm mb-1">University <span class="required">*</span></label>
-              <input id="universityInput" type="text" class="input" placeholder="e.g. University of Ghana" required />
-            </div>
-          </div>
-
-          <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
-            <div>
-              <label class="block text-sm mb-1">Programme / Major</label>
-              <input id="programmeInput" type="text" class="input" placeholder="e.g. Computer Science" />
-            </div>
-            <div>
-              <label class="block text-sm mb-1">Country</label>
-              <input id="countryInput" type="text" class="input" placeholder="e.g. Ghana" />
-            </div>
-          </div>
-
-          <div style="margin-top:10px;">
-            <label class="block text-sm mb-1">Avatar Emoji</label>
-            <input id="avatarInput" type="text" class="input" maxlength="2" placeholder="e.g. 👨🏾‍💻 or 🎓" />
-            <div class="hint">Used across your Learn & Earn dashboard and marketplace.</div>
-          </div>
-
-          <div style="margin-top:10px;">
-            <label class="block text-sm mb-1">Short Bio</label>
-            <textarea id="bioInput" class="textarea" placeholder="Tell us who you are, what you’re learning, and what kind of work you want to do."></textarea>
-          </div>
-
-          <div style="margin-top:10px;">
-            <label class="block text-sm mb-1">Roles</label>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;">
-              <button type="button" class="role-badge" data-role="student">🎓 Student</button>
-              <button type="button" class="role-badge" data-role="creator">🧩 Creator</button>
-              <button type="button" class="role-badge" data-role="merchant">🛒 Merchant</button>
-            </div>
-            <div class="hint">These roles show up in your profile and can be used for gating features later.</div>
-          </div>
-
-          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
-            <button type="submit" class="btn-primary">
-              💾 Save Profile
-            </button>
-            <button type="button" class="btn-ghost" onclick="resetProfileToDefaults()">
-              Reset (Local)
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <!-- RIGHT: Bio preview & connections -->
-      <aside>
-        <div class="side-card">
-          <div class="neon-title" style="font-size:.95rem;">Public Bio Preview</div>
-          <div id="bioPreview" class="muted" style="font-size:.86rem;margin-top:6px;">
-            Use this space to introduce yourself to future clients and collaborators. Your name, university, and roles will show here.
-          </div>
-        </div>
-
-        <div class="side-card">
-          <div class="neon-title" style="font-size:.95rem;">Connections</div>
-          <div class="muted" style="font-size:.8rem;margin-top:4px;">
-            Later, connect your external profiles so clients trust your work and see your portfolio.
-          </div>
-          <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px;font-size:.8rem;">
-            <div class="mini-label">LinkedIn (coming soon)</div>
-            <div class="mini-label">GitHub / Portfolio (coming soon)</div>
-            <div class="mini-label">Social (X, IG) (coming soon)</div>
-          </div>
-        </div>
-      </aside>
-    </section>
-  </div>
-
-  <footer class="page-foot">
-    Zep Swipe · Profile prototype · Data stored locally in your browser. When live, this becomes your portable learning & work identity.
-  </footer>
-
-  <!-- Footer nav -->
-  <div class="footer">
-    <!-- POS / Home icon -->
-    <div class="nav-btn" title="POS" onclick="location.href='pos.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="g1" x1="0" x2="1">
-            <stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/>
-          </linearGradient>
-        </defs>
-        <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor"/>
-        <path d="M7 8h10" stroke="currentColor" stroke-linecap="round"/>
-        <rect x="7" y="16" width="10" height="4" rx="1" stroke="currentColor"/>
-      </svg>
-    </div>
-
-    <!-- Add / Listing -->
-    <div class="nav-btn" title="Add Listing" onclick="location.href='create-gig.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g2)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <circle cx="12" cy="12" r="9" stroke="currentColor"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-linecap="round"/>
-      </svg>
-    </div>
-
-    <!-- Wallet -->
-    <div class="nav-btn" title="Wallet" onclick="location.href='wallet.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g3)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g3" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor"/>
-        <circle cx="18" cy="12" r="1.6" fill="currentColor"/>
-      </svg>
-    </div>
-
-    <!-- Profile (current page) -->
-    <div class="nav-btn" title="Profile" onclick="location.href='profile.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g4)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g4" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <circle cx="12" cy="8" r="3" stroke="currentColor"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor"/>
-      </svg>
-    </div>
-  </div>
+<!-- FOOTER -->
+<div class="footer">
+  <a href="index.html">Browse Talent</a>
+  <a href="#">About</a>
+  <a href="#">Contact</a>
+</div>
 
 <script>
-/* -------------------------------
-   Config & keys
-   ------------------------------- */
-const ZAC_TOKEN_ADDRESS = "0xfe4119a9cac1425d808526905e92386b4234bf2a";
-const tokenABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
-];
-const SIMULATED_ZAC_PRICE_USD = 0.15;
+/* Demo seller data (later from backend / chain) */
+const seller = {
+  name: "Ayo Digital",
+  university: "University of Lagos",
+  wallet: "0x1234...abcd",
+  skills: [
+    "AI Prompt Engineering",
+    "No-Code Automation",
+    "Content Writing",
+    "Landing Page Design"
+  ],
+  services: [
+    { title:"AI Prompt Setup", price:"20 USDC" },
+    { title:"No-Code Workflow Build", price:"35 USDC" },
+    { title:"SEO Content Article", price:"15 USDC" }
+  ]
+};
 
-// Keys shared with Learn & Earn + marketplace
-const BAL_KEY      = 'zepswipe_balance_v1';       // { xp, tokens, completed }
-const PROFILE_KEY  = 'zepswipe_profile_v1';       // { badges: [], ...extras }
-const GIGS_KEY     = 'zepswipe_gigs_v1';          // gigs from create-gig.html
+/* Populate */
+document.getElementById("name").textContent = seller.name;
+document.getElementById("university").textContent = seller.university;
+document.getElementById("avatar").textContent = seller.name.charAt(0);
 
-/* -------------------------------
-   Auth check
-   ------------------------------- */
-function requireAuth(){
-  const user = JSON.parse(localStorage.getItem('zepUser'));
-  if(!user || !user.loggedIn || !user.wallet){
-    window.location.href = 'login.html';
-    return null;
-  }
-  return user;
-}
-
-/* -------------------------------
-   Wallet display
-   ------------------------------- */
-async function renderUser(){
-  const user = requireAuth();
-  if(!user) return;
-
-  const walletEl = document.getElementById('walletAddress');
-  walletEl.textContent = `${user.wallet.slice(0,6)}...${user.wallet.slice(-4)}`;
-
-  try{
-    const provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
-    const contract = new ethers.Contract(ZAC_TOKEN_ADDRESS, tokenABI, provider);
-    const decimals = await contract.decimals();
-    const raw = await contract.balanceOf(user.wallet);
-    const formatted = Number(ethers.formatUnits(raw, decimals));
-
-    document.getElementById('zacBalance').textContent = `${formatted.toFixed(2)} ZAC`;
-    document.getElementById('usdValue').textContent   = `≈ $${(formatted * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
-  } catch(err){
-    console.warn('ZAC fetch failed, using local test credit', err);
-    const fallback = Number(localStorage.getItem('zacBalance') || 25);
-    document.getElementById('zacBalance').textContent = `${fallback} ZAC (Test)`;
-    document.getElementById('usdValue').textContent   = `≈ $${(fallback * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
-  }
-}
-
-/* -------------------------------
-   Wallet listeners
-   ------------------------------- */
-function setupWalletListeners(){
-  if(window.ethereum){
-    try{
-      window.ethereum.on && window.ethereum.on('accountsChanged', (accounts) => {
-        if(!accounts || accounts.length === 0){
-          localStorage.removeItem('zepUser');
-          window.location.href = 'login.html';
-        } else {
-          const user = JSON.parse(localStorage.getItem('zepUser') || '{}');
-          user.wallet = accounts[0];
-          localStorage.setItem('zepUser', JSON.stringify(user));
-          renderUser();
-        }
-      });
-      window.ethereum.on && window.ethereum.on('chainChanged', () => {
-        renderUser();
-      });
-    } catch(e){ console.warn('wallet listener failed', e); }
-  }
-}
-
-/* -------------------------------
-   Profile storage helpers
-   ------------------------------- */
-function readProfile(){
-  try{ return JSON.parse(localStorage.getItem(PROFILE_KEY)) || { badges: [] }; }
-  catch(e){ return { badges: [] }; }
-}
-function writeProfile(profile){
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-}
-
-function readBalance(){
-  try{ return JSON.parse(localStorage.getItem(BAL_KEY)) || { xp:0, tokens:0, completed:{} }; }
-  catch(e){ return { xp:0, tokens:0, completed:{} }; }
-}
-
-function readGigs(){
-  try{ return JSON.parse(localStorage.getItem(GIGS_KEY)) || []; }
-  catch(e){ return []; }
-}
-
-/* -------------------------------
-   Load stats (XP, tokens, badges, gigs)
-   ------------------------------- */
-function renderStats(){
-  const bal = readBalance();
-  const profile = readProfile();
-  const gigs = readGigs();
-
-  document.getElementById('xpValue').textContent      = Number(bal.xp || 0).toFixed(0);
-  document.getElementById('tokensValue').textContent  = Number(bal.tokens || 0).toFixed(0);
-  document.getElementById('badgeCount').textContent   = (profile.badges || []).length.toString();
-  document.getElementById('gigCount').textContent     = gigs.length.toString();
-}
-
-/* -------------------------------
-   Render profile fields
-   ------------------------------- */
-function renderProfileForm(){
-  const profile = readProfile();
-  const user = requireAuth();
-  if(!user) return;
-
-  const name    = profile.studentName || user.name || '';
-  const uni     = profile.university || '';
-  const programme = profile.programme || '';
-  const country   = profile.country || '';
-  const avatar    = profile.avatar || '👩🏾‍💻';
-  const bio       = profile.bio || '';
-  const roles     = profile.roles || ['student'];
-
-  // Inputs
-  document.getElementById('nameInput').value       = name;
-  document.getElementById('universityInput').value = uni;
-  document.getElementById('programmeInput').value  = programme;
-  document.getElementById('countryInput').value    = country;
-  document.getElementById('avatarInput').value     = avatar;
-  document.getElementById('bioInput').value        = bio;
-
-  // Display
-  document.getElementById('displayName').textContent      = name || 'Student Name';
-  document.getElementById('displayUniversity').textContent= uni || 'University / Campus';
-  document.getElementById('avatarEmoji').textContent      = avatar || '👩🏾‍💻';
-
-  // Role toggles
-  const roleButtons = document.querySelectorAll('.role-badge');
-  roleButtons.forEach(btn=>{
-    const r = btn.dataset.role;
-    btn.classList.toggle('active', roles.includes(r));
-  });
-
-  // Role pills text
-  document.getElementById('roleLabel1').textContent = roles.includes('student') ? 'Student' : 'Role 1';
-  document.getElementById('roleLabel2').textContent = roles.includes('creator') ? 'Creator' : 'Role 2';
-  document.getElementById('roleLabel3').textContent = roles.includes('merchant') ? 'Merchant' : 'Role 3';
-
-  updateBioPreview();
-}
-
-/* -------------------------------
-   Bio preview
-   ------------------------------- */
-function updateBioPreview(){
-  const name      = document.getElementById('nameInput').value.trim() || 'Student Name';
-  const uni       = document.getElementById('universityInput').value.trim() || 'your university';
-  const programme = document.getElementById('programmeInput').value.trim();
-  const country   = document.getElementById('countryInput').value.trim();
-  const bio       = document.getElementById('bioInput').value.trim();
-
-  const roles = Array.from(document.querySelectorAll('.role-badge.active')).map(b => b.dataset.role);
-  const roleText = roles.length ? roles.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(' · ') : 'Student';
-
-  let preview = `${name} · ${roleText}\n`;
-  preview += `Studying at ${uni}`;
-  if(programme) preview += ` (${programme})`;
-  if(country) preview += ` · Based in ${country}`;
-  preview += `.\n\n`;
-  preview += bio || 'Use this space to tell people what you’re good at and what kind of digital work you want to do.';
-
-  document.getElementById('bioPreview').textContent = preview;
-}
-
-/* -------------------------------
-   Role button handlers
-   ------------------------------- */
-function setupRoleButtons(){
-  const roleButtons = document.querySelectorAll('.role-badge');
-  roleButtons.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      btn.classList.toggle('active');
-      renderProfileRolesToHeader();
-      updateBioPreview();
-    });
-  });
-}
-
-function renderProfileRolesToHeader(){
-  const roles = Array.from(document.querySelectorAll('.role-badge.active')).map(b => b.dataset.role);
-  document.getElementById('roleLabel1').textContent = roles.includes('student') ? 'Student' : 'Role 1';
-  document.getElementById('roleLabel2').textContent = roles.includes('creator') ? 'Creator' : 'Role 2';
-  document.getElementById('roleLabel3').textContent = roles.includes('merchant') ? 'Merchant' : 'Role 3';
-}
-
-/* -------------------------------
-   Save profile
-   ------------------------------- */
-function setupForm(){
-  const form = document.getElementById('profileForm');
-
-  form.addEventListener('input', (e)=>{
-    if(['nameInput','universityInput','avatarInput','bioInput','programmeInput','countryInput'].includes(e.target.id)){
-      // sync display name/university/avatar
-      if(e.target.id === 'nameInput'){
-        document.getElementById('displayName').textContent = e.target.value || 'Student Name';
-      }
-      if(e.target.id === 'universityInput'){
-        document.getElementById('displayUniversity').textContent = e.target.value || 'University / Campus';
-      }
-      if(e.target.id === 'avatarInput'){
-        const emoji = e.target.value.trim() || '👩🏾‍💻';
-        document.getElementById('avatarEmoji').textContent = emoji;
-      }
-      updateBioPreview();
-    }
-  });
-
-  form.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const user = requireAuth();
-    if(!user) return;
-
-    const name      = document.getElementById('nameInput').value.trim();
-    const uni       = document.getElementById('universityInput').value.trim();
-
-    if(!name || !uni){
-      alert('Please fill in your name and university.');
-      return;
-    }
-
-    const programme = document.getElementById('programmeInput').value.trim();
-    const country   = document.getElementById('countryInput').value.trim();
-    const avatar    = document.getElementById('avatarInput').value.trim() || '👩🏾‍💻';
-    const bio       = document.getElementById('bioInput').value.trim();
-
-    const roles = Array.from(document.querySelectorAll('.role-badge.active')).map(b => b.dataset.role);
-    const profile = readProfile();
-
-    const updated = {
-      ...profile,
-      studentName: name,
-      university: uni,
-      programme,
-      country,
-      avatar,
-      bio,
-      roles: roles.length ? roles : ['student']
-    };
-
-    writeProfile(updated);
-
-    // Also update zepUser (name) so future pages can read it
-    user.name = name;
-    localStorage.setItem('zepUser', JSON.stringify(user));
-
-    alert('Profile saved locally. Learn & Earn and marketplace can now read your name, university and avatar.');
-  });
-}
-
-/* -------------------------------
-   Reset profile (local only)
-   ------------------------------- */
-function resetProfileToDefaults(){
-  if(!confirm('Reset profile data stored in this browser?')) return;
-  localStorage.removeItem(PROFILE_KEY);
-  renderProfileForm();
-  renderStats();
-}
-
-/* -------------------------------
-   Init
-   ------------------------------- */
-window.addEventListener('load', async ()=>{
-  const user = requireAuth();
-  if(!user) return;
-  setupWalletListeners();
-  renderUser();
-  setupRoleButtons();
-  renderProfileForm();
-  renderStats();
-
-  // expose reset to button
-  window.resetProfileToDefaults = resetProfileToDefaults;
+const skillsEl = document.getElementById("skills");
+seller.skills.forEach(s=>{
+  const div = document.createElement("div");
+  div.className="skill";
+  div.textContent=s;
+  skillsEl.appendChild(div);
 });
+
+const servicesEl = document.getElementById("services");
+seller.services.forEach(s=>{
+  const div = document.createElement("div");
+  div.className="service";
+  div.innerHTML = `<h4>${s.title}</h4><div class="price">${s.price}</div>`;
+  servicesEl.appendChild(div);
+});
+
+/* Hire placeholder */
+function hire(){
+  alert("Payment & messaging flow will open here (USDC / ZAC).");
+}
 </script>
+
 </body>
 </html>
