@@ -4,14 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Zep Swipe — Connect Wallet</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-<script src="https://cdn.tailwindcss.com"></script>
 
 <style>
 :root {
   --zep-blue:#00f0ff;
   --zep-violet:#9c4dff;
 }
+*{box-sizing:border-box}
 body {
   font-family:'Poppins',sans-serif;
   background:radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
@@ -22,7 +23,6 @@ body {
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  overflow:hidden;
 }
 h1 {
   font-family:'Orbitron';
@@ -30,7 +30,14 @@ h1 {
   background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  margin-bottom:1rem;
+  margin-bottom:0.6rem;
+}
+p{
+  opacity:0.75;
+  max-width:280px;
+  text-align:center;
+  margin-bottom:1.5rem;
+  font-size:0.95rem;
 }
 button {
   width:260px;
@@ -44,13 +51,11 @@ button {
   cursor:pointer;
   box-shadow:0 0 25px rgba(0,240,255,0.5);
 }
-button:hover {
-  transform:scale(1.05);
-}
+button:hover { transform:scale(1.05); }
 footer {
   position:fixed;
-  bottom:15px;
-  opacity:0.6;
+  bottom:16px;
+  opacity:0.55;
   font-size:0.8rem;
 }
 </style>
@@ -59,60 +64,76 @@ footer {
 <body>
 
 <h1>Zep Swipe</h1>
-<p style="opacity:0.7;max-width:260px;text-align:center;margin-bottom:1.5rem;">
-  Connect your wallet to continue to your Merchant Dashboard.
+<p>
+  Connect your wallet to access the marketplace or manage your verified student services.
 </p>
 
 <button onclick="connectWallet()">🔗 Connect Wallet</button>
 
-<footer>© 2025 Zep Swipe — Web3 Merchant MVP</footer>
+<footer>© 2025 Zep Swipe</footer>
 
 <script>
 async function connectWallet() {
   if (!window.ethereum) {
-    alert("🚨 No wallet detected! Install MetaMask or open in Coinbase Wallet.");
+    alert("No wallet detected. Use MetaMask or Coinbase Wallet.");
     return;
   }
 
   try {
-    console.log("⏳ Requesting wallet...");
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     });
 
-    if (!accounts || accounts.length === 0) {
-      alert("⚠️ No wallet connected.");
-      return;
-    }
+    if (!accounts || !accounts.length) return;
 
     const wallet = accounts[0];
-    console.log("Wallet connected:", wallet);
 
-    // Save merchant session
-    localStorage.setItem(
-      "zepUser",
-      JSON.stringify({ wallet, loggedIn: true })
-    );
+    // Save session for merchants subdomain
+    localStorage.setItem("zepUser", JSON.stringify({
+      wallet,
+      loggedIn: true
+    }));
 
-    // FIX FOR MOBILE METAMASK — Give the browser time to return focus
-    setTimeout(() => {
-      console.log("➡️ Redirecting to swipe-merchants.html");
-      window.location.href = "swipe-merchants.html"; // 🔥 UPDATED
-    }, 300);
+    routeUser(wallet);
 
   } catch (err) {
-    console.error("Login error:", err);
-    alert("⚠️ Wallet connection failed.");
+    console.error(err);
+    alert("Wallet connection failed");
   }
 }
 
-// Auto-login if already saved
-window.addEventListener("load", () => {
+/* ---------- ROLE ROUTER ---------- */
+function routeUser(wallet){
+  const student = JSON.parse(localStorage.getItem("zepStudent"));
+  const learn   = JSON.parse(localStorage.getItem("zepLearn")) || {skills:{}};
+
+  // 1️⃣ BUYER (no student profile)
+  if(!student || student.wallet !== wallet){
+    window.location.href = "marketplace.html";
+    return;
+  }
+
+  // 2️⃣ CHECK VERIFICATION (21+ completed days)
+  let completedDays = 0;
+  Object.values(learn.skills || {}).forEach(s=>{
+    completedDays += Math.max(0, (s.day || 1) - 1);
+  });
+
+  if(completedDays < 21){
+    // Redirect BACK to main app learn & earn
+    window.location.href = "https://zepswipe.com/learn-earn.html";
+    return;
+  }
+
+  // 3️⃣ VERIFIED STUDENT
+  window.location.href = "merchant-dashboard.html";
+}
+
+/* ---------- AUTO LOGIN ---------- */
+window.addEventListener("load", ()=>{
   const user = JSON.parse(localStorage.getItem("zepUser"));
-  if (user && user.loggedIn) {
-    setTimeout(() => {
-      window.location.href = "swipe-merchants.html"; // 🔥 UPDATED
-    }, 300);
+  if(user?.loggedIn && user.wallet){
+    routeUser(user.wallet);
   }
 });
 </script>
