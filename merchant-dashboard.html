@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Merchant Dashboard — Zep Swipe</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --glass:rgba(255,255,255,0.06);
+  --bg:radial-gradient(circle at 25% 10%, #020014 0%, #00000a 100%);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* Layout */
+.container{
+  max-width:1000px;
+  margin:28px auto 120px;
+  padding:16px;
+}
+
+/* Header */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px;
+  border-radius:18px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,0.12);
+  backdrop-filter:blur(16px);
+  box-shadow:0 0 30px rgba(0,240,255,0.2);
+}
+.brand{
+  font-family:'Orbitron';
+  font-size:1.5rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.badge{
+  margin-top:4px;
+  font-size:11px;
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+  font-family:'Orbitron';
+}
+
+/* Profile */
+.profile{
+  margin-top:20px;
+  padding:18px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+.avatar{
+  width:64px;height:64px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--zep-blue),var(--zep-violet));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron';
+  font-size:20px;
+  color:#050015;
+}
+.profile-info h3{
+  margin:0;
+  font-family:'Orbitron';
+  font-size:1rem;
+}
+.profile-info p{
+  margin:4px 0 0;
+  font-size:12px;
+  opacity:.8;
+}
+
+/* Stats */
+.stats{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+.stat{
+  padding:16px;
+  border-radius:16px;
+  background:rgba(0,0,0,0.6);
+  border:1px solid rgba(255,255,255,0.12);
+}
+.stat h4{
+  margin:0;
+  font-family:'Orbitron';
+  font-size:.9rem;
+}
+.stat p{
+  margin:8px 0 0;
+  font-size:1.4rem;
+  font-family:'Orbitron';
+}
+
+/* Actions */
+.actions{
+  margin-top:22px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+.action{
+  padding:16px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+  text-decoration:none;
+  color:#fff;
+  text-align:center;
+  transition:.2s;
+}
+.action:hover{
+  transform:translateY(-4px);
+  box-shadow:0 0 30px rgba(156,77,255,0.4);
+}
+.action h4{
+  margin:0;
+  font-family:'Orbitron';
+  font-size:.95rem;
+}
+.action p{
+  margin:6px 0 0;
+  font-size:12px;
+  opacity:.8;
+}
+
+/* Footer */
+.footer{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  padding:14px 22px;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(10px);
+  display:flex;
+  justify-content:space-around;
+}
+.fbtn{
+  width:56px;height:56px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="brand">Swipe Merchants</div>
+      <div class="badge">Verified Seller</div>
+    </div>
+    <button class="fbtn" onclick="logout()">⎋</button>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="profile">
+    <div class="avatar" id="avatar">Z</div>
+    <div class="profile-info">
+      <h3 id="name">Student Seller</h3>
+      <p id="meta">University · Country</p>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <h4>Total Earnings</h4>
+      <p id="earnings">0 USDC</p>
+    </div>
+    <div class="stat">
+      <h4>Orders Completed</h4>
+      <p id="orders">0</p>
+    </div>
+    <div class="stat">
+      <h4>Active Listings</h4>
+      <p id="listings">0</p>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <a href="marketplace.html" class="action">
+      <h4>View Marketplace</h4>
+      <p>See all live services</p>
+    </a>
+    <a href="merchant-profile.html" class="action">
+      <h4>Edit Profile</h4>
+      <p>Update skills & bio</p>
+    </a>
+    <a href="#" class="action">
+      <h4>Create Listing</h4>
+      <p>Publish a new service</p>
+    </a>
+    <a href="#" class="action">
+      <h4>Orders</h4>
+      <p>Manage incoming work</p>
+    </a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="fbtn" onclick="location.href='merchant-dashboard.html'">🏠</div>
+  <div class="fbtn" onclick="location.href='marketplace.html'">🛍</div>
+  <div class="fbtn" onclick="location.href='merchant-profile.html'">👤</div>
+</div>
+
+<script>
+/* Auth + Verification */
+window.onload=()=>{
+  const student = JSON.parse(localStorage.getItem("zepStudent"));
+  const profile = JSON.parse(localStorage.getItem("zepProfile"));
+  const learn   = JSON.parse(localStorage.getItem("zepLearn"));
+
+  if(!student || !learn){
+    location.href="signin.html";
+    return;
+  }
+
+  /* Enforce verification */
+  let days=0;
+  Object.values(learn.skills||{}).forEach(s=>{
+    days += Math.max(0,(s.day||1)-1);
+  });
+
+  if(days < 21){
+    alert("Complete Learn & Earn to become a seller");
+    location.href="https://zepswipe.com/learn-earn.html";
+    return;
+  }
+
+  /* Profile */
+  document.getElementById("name").textContent =
+    profile?.name || "Verified Student";
+  document.getElementById("meta").textContent =
+    `${profile?.university || "University"} · ${profile?.country || "Country"}`;
+  document.getElementById("avatar").textContent =
+    (profile?.name || "Z").charAt(0).toUpperCase();
+
+  /* Stats (local simulation) */
+  document.getElementById("earnings").textContent =
+    (student.usdcEarned||0)+" USDC";
+  document.getElementById("orders").textContent =
+    student.orders||0;
+  document.getElementById("listings").textContent =
+    student.listings||0;
+};
+
+function logout(){
+  localStorage.removeItem("zepUser");
+  location.href="signin.html";
+}
+</script>
+
+</body>
+</html>
