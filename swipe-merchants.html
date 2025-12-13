@@ -1,698 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Swipe Merchants — Marketplace</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Swipe Merchants — Zep Swipe</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<!-- Tailwind CDN (for layout helpers, optional) -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Ethers for on-chain reads -->
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"/>
 
 <style>
-  :root{
-    --zep-blue: #00f0ff;
-    --zep-violet:#9c4dff;
-    --zep-lime:#a6ff00;
-    --glass: rgba(255,255,255,0.06);
-    --bg: radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
-  }
-  html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto;overflow-x:hidden;}
-  body{
-    background:var(--bg); color:#fff;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-    padding-bottom:92px;
-  }
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --glass:rgba(255,255,255,0.06);
+  --bg:radial-gradient(circle at 25% 10%, #020014 0%, #00000a 100%);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:var(--bg);
+  color:#fff;
+  overflow-x:hidden;
+}
+.container{
+  max-width:1100px;
+  margin:24px auto 100px;
+  padding:16px;
+}
 
-  /* Header */
-  .header {
-    margin:18px; padding:14px 18px; border-radius:14px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-    backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.06);
-    display:flex;justify-content:space-between;align-items:center; gap:12px;
-    box-shadow:0 6px 30px rgba(0,240,255,0.06);
-    animation: headerGlow 3.5s ease-in-out infinite alternate;
-    position:relative;
-    overflow:hidden;
-  }
-  @keyframes headerGlow{
-    0%{ box-shadow:0 6px 18px rgba(0,240,255,0.06);}
-    100%{ box-shadow:0 10px 45px rgba(156,77,255,0.12);}
-  }
-  .header-glow{
-    position:absolute;inset:0;pointer-events:none;
-    background:
-      radial-gradient(circle at 10% 0%, rgba(156,77,255,0.35), transparent 55%),
-      radial-gradient(circle at 90% 100%, rgba(0,240,255,0.28), transparent 55%);
-    mix-blend-mode:screen;
-    opacity:.9;
-  }
-  .header-inner{position:relative;display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px;}
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px;
+  border-radius:18px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(18px);
+  box-shadow:0 0 45px rgba(0,240,255,.25);
+}
+.brand{
+  font-family:Orbitron;
+  font-size:1.4rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.tag{
+  font-size:12px;
+  opacity:.8;
+}
 
-  .brand {
-    font-family:Orbitron, sans-serif; font-weight:700; letter-spacing:0.6px;
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    font-size:1.1rem;
-  }
-  .brand-sub{
-    font-size:.86rem;
-    color:rgba(255,255,255,0.82);
-  }
+/* GRID */
+.grid{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;
+}
 
-  .home-btn {
-    display:inline-flex;align-items:center;gap:6px;
-    padding:7px 12px;border-radius:999px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    border:1px solid rgba(255,255,255,0.08);
-    text-decoration:none;color:#fff;
-    font-size:.85rem;
-  }
-  .home-icon-3d{
-    width:40px;height:40px;border-radius:12px;
-    background:linear-gradient(135deg,var(--zep-blue),var(--zep-violet));
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:
-      0 14px 32px rgba(0,240,255,0.35),
-      inset 0 -5px 14px rgba(0,0,0,0.35);
-    font-size:20px;
-  }
+/* MERCHANT CARD */
+.card{
+  padding:16px;
+  border-radius:18px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(14px);
+  transition:.25s;
+}
+.card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 18px 60px rgba(156,77,255,.25);
+}
 
-  /* Glass card */
-  .glass {
-    margin:12px; padding:18px; border-radius:14px;
-    background:var(--glass); border:1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px); box-shadow:0 8px 40px rgba(0,240,255,0.06);
-  }
+/* AVATAR */
+.avatar{
+  width:72px;height:72px;
+  border-radius:50%;
+  overflow:hidden;
+  background:linear-gradient(135deg,var(--zep-blue),var(--zep-violet));
+  display:flex;align-items:center;justify-content:center;
+}
+.avatar img{
+  width:100%;height:100%;object-fit:cover;
+}
+.avatar span{
+  font-family:Orbitron;
+  color:#050015;
+}
 
-  .neon-title{
-    font-family:Orbitron, sans-serif; font-weight:700;
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    font-size:1.05rem;
-    text-shadow:0 0 12px rgba(0,240,255,0.12);
-  }
-  .muted{opacity:.8;font-size:.9rem;}
+/* CARD CONTENT */
+.name{
+  font-family:Orbitron;
+  font-size:.95rem;
+  margin-top:10px;
+}
+.wallet{
+  font-size:12px;
+  opacity:.75;
+}
+.uni{
+  font-size:12px;
+  margin-top:4px;
+  opacity:.85;
+}
+.badge{
+  display:inline-block;
+  margin-top:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-family:Orbitron;
+  background:rgba(0,240,255,.25);
+  border:1px solid var(--zep-blue);
+}
 
-  .wallet-row{ display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
-  .wallet-balance{ font-family:Orbitron; font-size:1.7rem; margin-top:6px; }
+/* SKILLS */
+.skills{
+  margin-top:10px;
+}
+.skill{
+  display:inline-block;
+  margin:4px 4px 0 0;
+  padding:5px 8px;
+  font-size:11px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+}
 
-  /* Layout */
-  .page{
-    max-width:1120px;margin:0 auto;padding:4px 6px 16px 6px;
-  }
+/* ACTIONS */
+.actions{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+}
+.btn{
+  flex:1;
+  padding:8px 10px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-family:Orbitron;
+  font-size:11px;
+}
+.primary{
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+}
+.ghost{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;
+}
 
-  .filters{
-    display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 12px 4px 12px;
-  }
-  .chip{
-    padding:6px 10px;border-radius:999px;
-    font-size:.8rem;cursor:pointer;
-    background:rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.08);
-    color:rgba(255,255,255,0.78);
-    white-space:nowrap;
-  }
-  .chip.active{
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    border:none;color:#050018;font-weight:600;
-  }
+/* EMPTY */
+.empty{
+  text-align:center;
+  padding:40px;
+  opacity:.8;
+}
 
-  .grid{
-    display:grid;
-    grid-template-columns:2fr 0.95fr;
-    gap:14px;
-  }
-  @media(max-width:900px){
-    .grid{grid-template-columns:1fr;}
-  }
-
-  /* Category + gigs */
-  .category-block{
-    border-radius:12px;
-    padding:12px;
-    border:1px solid rgba(255,255,255,0.08);
-    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-    margin-bottom:10px;
-  }
-  .category-header{
-    display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
-  }
-  .cat-title{
-    font-size:.98rem;font-weight:600;
-  }
-  .cat-tag{
-    font-size:.72rem;
-    padding:4px 8px;border-radius:999px;
-    background:rgba(0,240,255,0.16);
-    color:#d2faff;
-  }
-  .cat-desc{font-size:.8rem;color:rgba(255,255,255,0.76);margin-top:4px;}
-
-  .cat-actions{
-    display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;
-  }
-  .btn{
-    padding:7px 11px;
-    border-radius:999px;
-    border:none;
-    cursor:pointer;
-    font-size:.8rem;
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    white-space:nowrap;
-  }
-  .btn-primary{
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    color:#050018;
-    font-family:Orbitron, sans-serif;
-  }
-  .btn-ghost{
-    background:transparent;
-    border:1px solid rgba(255,255,255,0.1);
-    color:rgba(255,255,255,0.88);
-  }
-
-  .gig-list{
-    margin-top:10px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-  }
-  .gig-item{
-    border-radius:10px;
-    padding:9px 10px;
-    border:1px solid rgba(255,255,255,0.09);
-    background:rgba(255,255,255,0.02);
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:8px;
-  }
-  .gig-title{
-    font-size:.9rem;font-weight:600;
-  }
-  .gig-meta{font-size:.75rem;color:rgba(255,255,255,0.75);margin-top:2px;}
-  .badge{
-    display:inline-flex;
-    align-items:center;
-    padding:3px 7px;
-    border-radius:999px;
-    font-size:.72rem;
-    background:rgba(0,240,255,0.15);
-    color:#bffaff;
-  }
-  .status-pill{
-    font-size:.72rem;
-    padding:3px 7px;
-    border-radius:999px;
-    background:rgba(156,77,255,0.15);
-    color:#e0c7ff;
-  }
-
-  /* Sidebar cards */
-  .side-card{
-    border-radius:12px;
-    padding:12px 14px;
-    border:1px solid rgba(255,255,255,0.08);
-    background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
-    margin-bottom:10px;
-  }
-
-  .stat-pill{
-    padding:8px 10px;
-    border-radius:10px;
-    background:linear-gradient(135deg, rgba(0,240,255,0.18), rgba(156,77,255,0.12));
-    font-size:.8rem;
-    border:1px solid rgba(255,255,255,0.15);
-  }
-
-  .mini-label{
-    font-size:.75rem;
-    color:rgba(255,255,255,0.7);
-  }
-
-  .saved-gigs-list{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    margin-top:6px;
-  }
-  .saved-gig-item{
-    border-radius:8px;
-    padding:7px;
-    border:1px solid rgba(255,255,255,0.08);
-    background:rgba(255,255,255,0.02);
-    font-size:.78rem;
-    display:flex;
-    justify-content:space-between;
-    gap:6px;
-  }
-
-  footer.page-foot{
-    max-width:1120px;margin:6px auto 0 auto;
-    padding:6px 6px 80px 6px;
-    font-size:.8rem;color:rgba(255,255,255,0.65);
-    text-align:center;
-  }
-
-  /* Footer nav (as dashboard) */
-  .footer {
-    position:fixed; bottom:0; left:0; right:0; height:72px;
-    display:flex; align-items:center; justify-content:space-around;
-    background:linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.45));
-    border-top:1px solid rgba(255,255,255,0.04);
-    backdrop-filter: blur(8px);
-  }
-  .nav-btn { width:56px; height:56px; border-radius:14px; display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04);
-    box-shadow:0 6px 20px rgba(0,240,255,0.04); transition:transform .15s, box-shadow .15s; cursor:pointer;
-  }
-  .nav-btn:hover{ transform:translateY(-6px); box-shadow:0 20px 60px rgba(156,77,255,0.12); }
-  .nav-svg { width:26px; height:26px; filter:drop-shadow(0 0 8px rgba(0,240,255,0.4)); }
-
-  @media(max-width:640px){
-    .glass{margin:10px;}
-    .wallet-balance{font-size:1.5rem;}
-    .brand-sub{display:none;}
-  }
+/* FOOTER */
+.footer{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  padding:12px;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(10px);
+  display:flex;
+  justify-content:space-around;
+}
+.footer a{
+  color:#00f0ff;
+  font-family:Orbitron;
+  font-size:13px;
+  text-decoration:none;
+}
 </style>
 </head>
 
 <body>
-  <!-- Header -->
-  <div class="header glass">
-    <div class="header-glow" aria-hidden="true"></div>
-    <div class="header-inner">
-      <div>
-        <div class="brand">Swipe Merchants</div>
-        <div class="brand-sub">Marketplace for Zep Swipe student creators & digital services</div>
-      </div>
-      <a href="merchant-dashboard.html" class="home-btn" title="Back to Merchant Dashboard">
-        <div class="home-icon-3d">🏠</div>
-        <span class="hidden sm:inline">Dashboard</span>
-      </a>
+
+<div class="container">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div class="brand">Swipe Merchants</div>
+      <div class="tag">Verified student talent · Base network</div>
+    </div>
+    <div class="tag" onclick="location.href='student-dashboard.html'" style="cursor:pointer">
+      ← Dashboard
     </div>
   </div>
 
-  <!-- Wallet overview -->
-  <div class="glass">
-    <div class="wallet-row">
-      <div>
-        <div class="neon-title">Connected Wallet</div>
-        <div id="walletAddress" class="muted mt-1">—</div>
-      </div>
-      <div class="text-right">
-        <div class="muted text-sm">ZAC Balance</div>
-        <div id="zacBalance" class="wallet-balance">0 ZAC</div>
-        <div id="usdValue" class="muted text-xs mt-1">≈ $0.00</div>
-        <div class="muted text-[0.75rem] mt-1">Base Mainnet</div>
-      </div>
-    </div>
-  </div>
+  <!-- GRID -->
+  <div class="grid" id="merchantGrid"></div>
+</div>
 
-  <!-- Filters -->
-  <div class="page">
-    <div class="filters">
-      <span class="chip active" data-filter="all">All</span>
-      <span class="chip" data-filter="ai">AI</span>
-      <span class="chip" data-filter="design">Design</span>
-      <span class="chip" data-filter="web">Web</span>
-      <span class="chip" data-filter="video">Video</span>
-      <span class="chip" data-filter="research">Research</span>
-      <span class="chip" data-filter="automation">Automation</span>
-    </div>
-
-    <section class="grid">
-      <!-- LEFT: Categories & gigs -->
-      <section class="glass" style="margin:0;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
-          <div>
-            <div class="neon-title">Marketplace Categories</div>
-            <div class="muted text-sm mt-1">Each category maps to a Zep Swipe skill. Only verified students should go live here.</div>
-          </div>
-          <button class="btn btn-primary" type="button" onclick="window.location.href='create-gig.html'">
-            ➕ New Gig
-          </button>
-        </div>
-
-        <div id="categoryList"></div>
-      </section>
-
-      <!-- RIGHT: Sidebar -->
-      <aside>
-        <div class="side-card">
-          <div class="neon-title" style="font-size:.95rem;">Marketplace Snapshot</div>
-          <div class="muted" style="font-size:.8rem;margin-top:4px">
-            This view is in <strong>local mode</strong>. Gigs are stored in your browser (localStorage). Connect this later to a real backend & smart contracts.
-          </div>
-
-          <div class="stat-pill mt-3">
-            <div class="mini-label">Total gigs (local)</div>
-            <div id="totalGigs" style="font-family:Orbitron;font-size:1rem;margin-top:3px;">0</div>
-          </div>
-
-          <div style="font-size:.8rem;color:rgba(255,255,255,0.7);margin-top:6px;">
-            • Live gigs will be visible to buyers when you connect Slim.jo Market or your external buyers.<br/>
-            • Use this to test categories, pricing, and gig descriptions.
-          </div>
-        </div>
-
-        <div class="side-card">
-          <div class="neon-title" style="font-size:.95rem;">Saved Gigs (This Browser)</div>
-          <div id="savedGigsList" class="saved-gigs-list"></div>
-        </div>
-
-        <div class="side-card">
-          <div class="neon-title" style="font-size:.95rem;">Global Freelancer Mode</div>
-          <div class="muted" style="font-size:.8rem;margin-top:4px;">
-            Once students pass Learn & Earn capstones, link this to a pro dashboard where they manage orders, chats, and payouts.
-          </div>
-          <button class="btn btn-primary mt-3" type="button" style="width:100%;justify-content:center;"
-                  onclick="window.location.href='dashboard-store.html'">
-            🌍 Open Pro Store
-          </button>
-        </div>
-      </aside>
-    </section>
-  </div>
-
-  <footer class="page-foot">
-    Swipe Merchants · Zep Swipe marketplace prototype · Gigs stored via localStorage (no backend yet).
-  </footer>
-
-  <!-- Footer nav (same style as merchant dashboard) -->
-  <div class="footer">
-    <!-- POS / Home icon -->
-    <div class="nav-btn" title="POS" onclick="location.href='pos.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="g1" x1="0" x2="1">
-            <stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/>
-          </linearGradient>
-        </defs>
-        <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor"/>
-        <path d="M7 8h10" stroke="currentColor" stroke-linecap="round"/>
-        <rect x="7" y="16" width="10" height="4" rx="1" stroke="currentColor"/>
-      </svg>
-    </div>
-
-    <!-- Add / Listing -->
-    <div class="nav-btn" title="Add Listing" onclick="location.href='create-gig.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g2)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <circle cx="12" cy="12" r="9" stroke="currentColor"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-linecap="round"/>
-      </svg>
-    </div>
-
-    <!-- Wallet -->
-    <div class="nav-btn" title="Wallet" onclick="location.href='wallet.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g3)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g3" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor"/>
-        <circle cx="18" cy="12" r="1.6" fill="currentColor"/>
-      </svg>
-    </div>
-
-    <!-- Profile -->
-    <div class="nav-btn" title="Profile" onclick="location.href='profile.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g4)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g4" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <circle cx="12" cy="8" r="3" stroke="currentColor"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor"/>
-      </svg>
-    </div>
-  </div>
+<!-- FOOTER -->
+<div class="footer">
+  <a href="student-dashboard.html">Home</a>
+  <a href="learn-earn.html">Learn</a>
+  <a href="wallet.html">Wallet</a>
+  <a href="profile.html">Profile</a>
+</div>
 
 <script>
-/* -------------------------------
-   Config & On-Chain helpers
-   ------------------------------- */
-const ZAC_TOKEN_ADDRESS = "0xfe4119a9cac1425d808526905e92386b4234bf2a"; // your ZAC token on Base
-const tokenABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
+/* AUTH */
+const student = JSON.parse(localStorage.getItem("zepStudent"));
+if(!student){ location.href="student-login.html"; }
+
+/* VERIFICATION CHECK */
+const verified = localStorage.getItem("zepVerified")==="true";
+if(!verified){
+  alert("Complete Learn & Earn to access Swipe Merchants.");
+  location.href="learn-earn.html";
+}
+
+/* DATA */
+const avatar = localStorage.getItem("zepAvatar");
+const uni    = localStorage.getItem("zepUniversity") || "University not set";
+const wallet = student.wallet;
+const short  = wallet.slice(0,6)+"..."+wallet.slice(-4);
+
+/* COURSES */
+const courses = [
+ "AI Prompt Engineering","No-Code Automation","Content Creation",
+ "Chatbot Building","Web Design","Data & Research","Digital Marketing","Freelancing"
 ];
-const GIGS_KEY = 'zepswipe_gigs_v1';
-const SAVED_GIGS_KEY = 'zepswipe_saved_gigs_v1';
-const SIMULATED_ZAC_PRICE_USD = 0.15;
 
-/* Category meta (maps to 8 skills) */
-const CATEGORIES = [
-  { id:'ai_prompt',       filter:'ai',         title:'AI Prompt Engineering', desc:'Prompt design, workflow-specific prompts and AI task systems.' },
-  { id:'ai_content',      filter:'ai',         title:'AI Content Generation', desc:'Blogs, captions, email copy, content calendars powered by AI.' },
-  { id:'social_design',   filter:'design',     title:'Social Design (No-code)', desc:'Carousels, flyers, story templates, social media graphics.' },
-  { id:'chatbot_builder', filter:'ai',         title:'Chatbot Builder', desc:'Chatbots for support, lead capture, and FAQs.' },
-  { id:'nocode_web',      filter:'web',        title:'No-code Websites', desc:'Landing pages, micro-sites, forms and simple web flows.' },
-  { id:'micro_video',     filter:'video',      title:'Micro Video Editor', desc:'Short-form clips, reels, highlight edits and captions.' },
-  { id:'research_leads',  filter:'research',   title:'Research & Lead Gen', desc:'Lead lists, market snapshots, research summaries.' },
-  { id:'micro_automation',filter:'automation', title:'Micro-Automation', desc:'Zapier-like workflows to connect tools and automate tasks.' },
-];
-
-/* -------------------------------
-   Auth check - same localStorage key as other pages
-   ------------------------------- */
-function requireAuth(){
-  const user = JSON.parse(localStorage.getItem('zepUser'));
-  if(!user || !user.loggedIn || !user.wallet){
-    window.location.href = 'login.html';
-    return null;
-  }
-  return user;
-}
-
-/* -------------------------------
-   Render wallet address and fetch balances
-   ------------------------------- */
-async function renderUser(){
-  const user = requireAuth();
-  if(!user) return;
-
-  const walletEl = document.getElementById('walletAddress');
-  walletEl.textContent = `${user.wallet.slice(0,6)}...${user.wallet.slice(-4)}`;
-
-  try {
-    const provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
-    const contract = new ethers.Contract(ZAC_TOKEN_ADDRESS, tokenABI, provider);
-    const decimals = await contract.decimals();
-    const raw = await contract.balanceOf(user.wallet);
-    const formatted = Number(ethers.formatUnits(raw, decimals));
-    document.getElementById('zacBalance').textContent = `${formatted.toFixed(2)} ZAC`;
-    document.getElementById('usdValue').textContent = `≈ $${(formatted * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
-  } catch(err){
-    console.warn("ZAC fetch failed, using test credit", err);
-    const fallback = Number(localStorage.getItem('zacBalance') || 25);
-    document.getElementById('zacBalance').textContent = `${fallback} ZAC (Test)`;
-    document.getElementById('usdValue').textContent = `≈ $${(fallback * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
-  }
-}
-
-/* -------------------------------
-   Wallet change listeners (MetaMask)
-   ------------------------------- */
-function setupWalletListeners(){
-  if(window.ethereum){
-    try {
-      window.ethereum.on && window.ethereum.on('accountsChanged', (accounts) => {
-        if(!accounts || accounts.length === 0){
-          localStorage.removeItem('zepUser');
-          window.location.href = 'login.html';
-        } else {
-          const user = JSON.parse(localStorage.getItem('zepUser') || '{}');
-          user.wallet = accounts[0];
-          localStorage.setItem('zepUser', JSON.stringify(user));
-          renderUser();
-        }
-      });
-      window.ethereum.on && window.ethereum.on('chainChanged', () => {
-        renderUser();
-      });
-    } catch(e){ console.warn("wallet listener failed", e); }
-  }
-}
-
-/* -------------------------------
-   Gigs & saved gigs helpers
-   ------------------------------- */
-function readGigs(){
-  try{ return JSON.parse(localStorage.getItem(GIGS_KEY)) || []; }
-  catch(e){ return []; }
-}
-function writeGigs(gigs){
-  localStorage.setItem(GIGS_KEY, JSON.stringify(gigs));
-}
-
-function readSavedGigs(){
-  try{ return JSON.parse(localStorage.getItem(SAVED_GIGS_KEY)) || []; }
-  catch(e){ return []; }
-}
-function writeSavedGigs(list){
-  localStorage.setItem(SAVED_GIGS_KEY, JSON.stringify(list));
-  renderSavedGigs();
-}
-
-/* -------------------------------
-   Category rendering
-   ------------------------------- */
-function getQueryFilter(){
-  const params = new URLSearchParams(window.location.search);
-  return params.get('filter') || 'all';
-}
-
-function renderCategories(activeFilter='all'){
-  const container = document.getElementById('categoryList');
-  container.innerHTML = '';
-  const gigs = readGigs();
-  document.getElementById('totalGigs').textContent = gigs.length.toString();
-
-  const filteredCategories = CATEGORIES.filter(cat => activeFilter === 'all' || cat.filter === activeFilter);
-
-  filteredCategories.forEach(cat=>{
-    const catGigs = gigs.filter(g => g.category === cat.id);
-    const block = document.createElement('div');
-    block.className = 'category-block';
-
-    const sampleCount = catGigs.length;
-    const gigsHTML = sampleCount === 0
-      ? `<div class="muted" style="font-size:.8rem;margin-top:6px;">No gigs yet. Be the first to create a service in this category.</div>`
-      : catGigs.map(g => {
-          const tags = (g.tags || []).map(t => `<span class="mini-label" style="margin-right:4px;">#${t}</span>`).join(' ');
-          return `
-            <div class="gig-item">
-              <div>
-                <div class="gig-title">${g.title}</div>
-                <div class="gig-meta">
-                  ${g.tagline || ''}<br/>
-                  <span>${g.priceZac} ZAC • ${g.delivery}</span> • <span>${g.level}</span>
-                </div>
-                <div class="gig-meta" style="margin-top:4px;">${tags}</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-                <span class="status-pill">${g.status === 'live' ? 'Live' : 'Draft'}</span>
-                <button class="btn btn-ghost" type="button" onclick="openGigDetail('${g.id}')">View</button>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-    block.innerHTML = `
-      <div class="category-header">
-        <div>
-          <div class="cat-title">${cat.title}</div>
-          <div class="cat-desc">${cat.desc}</div>
-        </div>
-        <div style="text-align:right;">
-          <div class="cat-tag">${cat.filter.toUpperCase()}</div>
-          <div style="font-size:.75rem;color:rgba(255,255,255,0.78);margin-top:3px;">${sampleCount} gig${sampleCount!==1?'s':''}</div>
-        </div>
-      </div>
-      <div class="cat-actions">
-        <button class="btn btn-primary" type="button" onclick="createGigInCategory('${cat.id}','${cat.title.replace(/'/g,"\\'")}')">
-          ➕ Create Gig
-        </button>
-        <button class="btn btn-ghost" type="button" onclick="filterBy('${cat.filter}')">
-          Filter: ${cat.filter.toUpperCase()}
-        </button>
-      </div>
-      <div class="gig-list">
-        ${gigsHTML}
-      </div>
-    `;
-    container.appendChild(block);
-  });
-
-  if(filteredCategories.length === 0){
-    container.innerHTML = '<div class="muted" style="font-size:.85rem;">No categories match this filter.</div>';
-  }
-}
-
-/* -------------------------------
-   Saved gigs (from prototypes)
-   ------------------------------- */
-function renderSavedGigs(){
-  const el = document.getElementById('savedGigsList');
-  const list = readSavedGigs();
-  el.innerHTML = '';
-  if(list.length === 0){
-    el.innerHTML = '<div class="muted" style="font-size:.8rem;">No saved gigs yet in this browser.</div>';
-    return;
-  }
-  list.forEach(g=>{
-    const item = document.createElement('div');
-    item.className = 'saved-gig-item';
-    item.innerHTML = `
-      <div>
-        <div style="font-weight:600;">${g.title}</div>
-        <div class="mini-label">Category: ${g.categoryTitle || g.categoryId}</div>
-      </div>
-      <button class="btn btn-ghost" type="button" style="font-size:.7rem;padding:4px 7px;" onclick="removeSavedGig('${g.id}')">Remove</button>
-    `;
-    el.appendChild(item);
-  });
-}
-
-function removeSavedGig(id){
-  const list = readSavedGigs().filter(x=>x.id !== id);
-  writeSavedGigs(list);
-}
-
-/* -------------------------------
-   Navigation actions
-   ------------------------------- */
-function createGigInCategory(catId, catTitle){
-  const url = `create-gig.html?category=${encodeURIComponent(catId)}&title=${encodeURIComponent(catTitle)}`;
-  window.location.href = url;
-}
-function openGigDetail(id){
-  const url = `gig-detail.html?id=${encodeURIComponent(id)}`;
-  window.location.href = url;
-}
-
-/* -------------------------------
-   Filters
-   ------------------------------- */
-function setupFilters(){
-  const chips = document.querySelectorAll('.chip');
-  chips.forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      const f = chip.dataset.filter || 'all';
-      filterBy(f);
-    });
-  });
-}
-
-function filterBy(filter){
-  const chips = document.querySelectorAll('.chip');
-  chips.forEach(chip=>{
-    chip.classList.toggle('active', chip.dataset.filter === filter || (filter === 'all' && chip.dataset.filter === 'all'));
-  });
-  renderCategories(filter);
-}
-
-/* -------------------------------
-   Init
-   ------------------------------- */
-window.addEventListener('load', async ()=>{
-  const user = requireAuth();
-  if(!user) return;
-  setupWalletListeners();
-  renderUser();
-  setupFilters();
-
-  // initial filter from URL
-  const initialFilter = getQueryFilter();
-  filterBy(initialFilter);
-  renderSavedGigs();
+let skills=[];
+courses.forEach(c=>{
+  const key="zep_"+c.split(" ")[0].toLowerCase();
+  const data=JSON.parse(localStorage.getItem(key));
+  if(data && data.day>=21) skills.push(c);
 });
 
-// expose for inline
-window.createGigInCategory = createGigInCategory;
-window.openGigDetail = openGigDetail;
-window.removeSavedGig = removeSavedGig;
-window.filterBy = filterBy;
+/* RENDER */
+const grid=document.getElementById("merchantGrid");
+
+if(skills.length===0){
+  grid.innerHTML=`<div class="empty">
+    No verified merchants yet.<br/>Complete Learn & Earn to appear here.
+  </div>`;
+}else{
+  grid.innerHTML=`
+    <div class="card">
+      <div class="avatar">
+        ${avatar?`<img src="${avatar}">`:`<span>Z</span>`}
+      </div>
+
+      <div class="name">${short}</div>
+      <div class="wallet">${wallet}</div>
+      <div class="uni">${uni}</div>
+
+      <div class="badge">Verified Student</div>
+
+      <div class="skills">
+        ${skills.map(s=>`<span class="skill">${s}</span>`).join("")}
+      </div>
+
+      <div class="actions">
+        <button class="btn ghost" onclick="alert('Profile view coming soon')">Profile</button>
+        <button class="btn primary" onclick="alert('Messaging coming soon')">Contact</button>
+      </div>
+    </div>
+  `;
+}
 </script>
+
 </body>
 </html>
