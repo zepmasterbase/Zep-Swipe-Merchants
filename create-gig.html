@@ -1,549 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Zep Swipe — Create Gig</title>
+<title>Create Service — Zep Swipe</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<!-- Tailwind CDN (for layout helpers) -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Ethers for on-chain reads -->
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.0/dist/ethers.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-  :root{
-    --zep-blue: #00f0ff;
-    --zep-violet:#9c4dff;
-    --zep-lime:#a6ff00;
-    --glass: rgba(255,255,255,0.06);
-    --bg: radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
-  }
-  html,body{height:100%;margin:0;font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto;}
-  body{
-    background:var(--bg); color:#fff;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-    padding-bottom:92px;
-  }
-
-  /* Header */
-  .header {
-    margin:18px; padding:14px 18px; border-radius:14px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-    backdrop-filter: blur(14px); border:1px solid rgba(255,255,255,0.06);
-    display:flex;justify-content:space-between;align-items:center; gap:12px;
-    box-shadow:0 6px 30px rgba(0,240,255,0.06);
-    animation: headerGlow 3.5s ease-in-out infinite alternate;
-  }
-  @keyframes headerGlow{
-    0%{ box-shadow:0 6px 18px rgba(0,240,255,0.06);}
-    100%{ box-shadow:0 10px 45px rgba(156,77,255,0.12);}
-  }
-  .brand {
-    font-family:Orbitron, sans-serif; font-weight:700; letter-spacing:0.6px;
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    font-size:1.1rem;
-  }
-
-  .back-btn {
-    background:transparent; border:none; cursor:pointer; padding:8px 12px; border-radius:10px;
-    display:flex;align-items:center;gap:6px;
-    color:rgba(255,255,255,0.9);
-    border:1px solid rgba(255,255,255,0.08);
-    font-size:.85rem;
-  }
-
-  /* Glass card */
-  .glass {
-    margin:12px; padding:18px; border-radius:14px;
-    background:var(--glass); border:1px solid rgba(255,255,255,0.08);
-    backdrop-filter: blur(14px); box-shadow:0 8px 40px rgba(0,240,255,0.06);
-  }
-
-  .neon-title{
-    font-family:Orbitron, sans-serif; font-weight:700;
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    font-size:1.15rem;
-    text-shadow:0 0 12px rgba(0,240,255,0.12);
-  }
-
-  .muted{ opacity:.75; font-size:.9rem; }
-
-  .wallet-row{ display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
-  .wallet-balance{ font-family:Orbitron; font-size:1.8rem; margin-top:6px; }
-
-  /* Form */
-  .form-grid{
-    display:grid;
-    grid-template-columns:2fr 1.1fr;
-    gap:16px;
-  }
-  @media(max-width:900px){
-    .form-grid{grid-template-columns:1fr;}
-  }
-
-  label span.required{color:#ff7b7b;font-size:.9em;}
-
-  .input, .select, .textarea{
-    width:100%;
-    border-radius:10px;
-    border:1px solid rgba(255,255,255,0.12);
-    background:rgba(5,0,30,0.68);
-    padding:9px 11px;
-    color:#fff;
-    font-size:.9rem;
-    outline:none;
-  }
-  .input:focus, .select:focus, .textarea:focus{
-    border-color:var(--zep-blue);
-    box-shadow:0 0 0 1px rgba(0,240,255,0.25);
-  }
-
-  .textarea{min-height:120px;resize:vertical;}
-
-  .btn-primary{
-    background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-    border:none;border-radius:999px;
-    padding:9px 18px;
-    color:#050018;
-    font-family:Orbitron, sans-serif;
-    font-size:.85rem;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    box-shadow:0 10px 30px rgba(156,77,255,0.25);
-  }
-  .btn-ghost{
-    background:transparent;
-    border-radius:999px;
-    padding:8px 14px;
-    border:1px solid rgba(255,255,255,0.25);
-    color:rgba(255,255,255,0.85);
-    cursor:pointer;
-    font-size:.85rem;
-  }
-
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-    padding:6px 10px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,0.12);
-    font-size:.78rem;
-    color:rgba(255,255,255,0.78);
-  }
-
-  .hint{font-size:.8rem;opacity:.75;margin-top:3px;}
-
-  /* Footer nav (same as merchant dashboard) */
-  .footer {
-    position:fixed; bottom:0; left:0; right:0; height:72px;
-    display:flex; align-items:center; justify-content:space-around;
-    background:linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.45));
-    border-top:1px solid rgba(255,255,255,0.04);
-    backdrop-filter: blur(8px);
-  }
-  .nav-btn { width:56px; height:56px; border-radius:14px; display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04);
-    box-shadow:0 6px 20px rgba(0,240,255,0.04); transition:transform .15s, box-shadow .15s; cursor:pointer;
-  }
-  .nav-btn:hover{ transform:translateY(-6px); box-shadow:0 20px 60px rgba(156,77,255,0.12); }
-  .nav-svg { width:26px; height:26px; filter:drop-shadow(0 0 8px rgba(0,240,255,0.4)); }
-
-  @media(max-width:640px){
-    .glass{margin:10px;}
-    .wallet-balance{font-size:1.5rem;}
-  }
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --bg:radial-gradient(circle at top, #050018 0%, #000010 100%);
+  --glass:rgba(255,255,255,0.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Poppins,sans-serif;
+  background:var(--bg);
+  color:#fff;
+}
+.container{
+  max-width:720px;
+  margin:28px auto 100px;
+  padding:16px;
+}
+.header{
+  padding:16px;
+  border-radius:18px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(16px);
+}
+.brand{
+  font-family:Orbitron;
+  font-size:1.3rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.card{
+  margin-top:18px;
+  padding:18px;
+  border-radius:20px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(16px);
+}
+h3{
+  margin-top:0;
+  font-family:Orbitron;
+}
+label{
+  font-size:12px;
+  opacity:.85;
+}
+input, textarea{
+  width:100%;
+  margin-top:6px;
+  margin-bottom:14px;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.15);
+  background:#020617;
+  color:#fff;
+  font-size:13px;
+}
+textarea{min-height:90px;resize:vertical}
+.btn{
+  width:100%;
+  padding:14px;
+  border-radius:999px;
+  border:none;
+  font-family:Orbitron;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+  cursor:pointer;
+}
+.muted{
+  font-size:12px;
+  opacity:.8;
+  margin-top:8px;
+}
+.locked{
+  text-align:center;
+  padding:18px;
+  border-radius:16px;
+  border:1px dashed rgba(255,255,255,.2);
+  opacity:.6;
+}
 </style>
 </head>
 
 <body>
-  <!-- Header -->
-  <div class="header glass">
-    <div style="display:flex;gap:12px;align-items:center">
-      <div class="brand"><span style="font-family:Orbitron">Zep</span> Swipe</div>
-      <div style="font-size:.9rem; color:rgba(255,255,255,0.85); margin-left:6px;">Create Gig</div>
-    </div>
 
-    <div style="display:flex;gap:8px;align-items:center">
-      <button class="back-btn" type="button" onclick="window.history.back()">
-        ← Back
-      </button>
+<div class="container">
+
+  <div class="header">
+    <div class="brand">Create a Service</div>
+  </div>
+
+  <div class="card" id="formCard">
+    <h3>Service Details</h3>
+
+    <label>Service Title</label>
+    <input id="title" placeholder="e.g. AI Content Writing for Startups">
+
+    <label>Description</label>
+    <textarea id="desc" placeholder="Describe exactly what the client will receive"></textarea>
+
+    <label>Price (USDC)</label>
+    <input id="price" type="number" min="5" step="1" placeholder="25">
+
+    <button class="btn" onclick="publish()">Publish Service</button>
+
+    <div class="muted">
+      ✔ Payments are in USDC on Base  
+      ✔ Only verified students can list services
     </div>
   </div>
 
-  <!-- Wallet overview -->
-  <div class="glass">
-    <div class="wallet-row">
-      <div>
-        <div class="neon-title">Merchant Wallet</div>
-        <div id="walletAddress" class="muted mt-1">—</div>
-      </div>
-      <div class="text-right">
-        <div class="muted text-sm">ZAC Balance</div>
-        <div id="zacBalance" class="wallet-balance">0 ZAC</div>
-        <div id="usdValue" class="muted text-xs mt-1">≈ $0.00</div>
-        <div class="muted text-[0.75rem] mt-1">Base Mainnet</div>
-      </div>
-    </div>
+  <div class="card locked" id="lockedCard" style="display:none">
+    🚫 You are not verified yet  
+    <br><br>
+    Complete **21 Learn & Earn daily tasks** to unlock service listings.
   </div>
 
-  <!-- Create gig form -->
-  <div class="glass">
-    <div class="flex items-center justify-between mb-3">
-      <div>
-        <div class="neon-title">Create a New Gig</div>
-        <div class="muted mt-1 text-sm">Describe a clear, deliverable digital service your Zep Swipe skills can deliver.</div>
-      </div>
-      <div class="hidden md:flex flex-col items-end text-right">
-        <span class="pill">Status: <span id="statusLabel">Draft</span></span>
-        <span class="hint mt-1">You can start in draft and publish later.</span>
-      </div>
-    </div>
-
-    <form id="gigForm" class="form-grid">
-      <!-- Left column -->
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm mb-1">Skill Category <span class="required">*</span></label>
-          <select id="category" class="select" required>
-            <option value="">Select category</option>
-            <option value="ai_prompt">AI Prompt Engineering</option>
-            <option value="ai_content">AI Content Generation</option>
-            <option value="social_design">Social Design (No-code)</option>
-            <option value="chatbot_builder">Chatbot Builder</option>
-            <option value="nocode_web">No-code Websites</option>
-            <option value="micro_video">Micro Video Editor</option>
-            <option value="research_leads">Research & Lead Gen</option>
-            <option value="micro_automation">Micro-Automation</option>
-          </select>
-          <div class="hint">This should match the skill you’re certified in.</div>
-        </div>
-
-        <div>
-          <label class="block text-sm mb-1">Gig Title <span class="required">*</span></label>
-          <input id="title" type="text" class="input" required placeholder="e.g. 10 custom AI prompts for your business" />
-          <div class="hint">Write it like a benefit: who it’s for + what you deliver.</div>
-        </div>
-
-        <div>
-          <label class="block text-sm mb-1">Short Tagline <span class="required">*</span></label>
-          <input id="tagline" type="text" class="input" required placeholder="e.g. Done-for-you prompts your whole team can reuse" />
-        </div>
-
-        <div>
-          <label class="block text-sm mb-1">Full Description <span class="required">*</span></label>
-          <textarea id="description" class="textarea" required placeholder="Explain exactly what the client gets, your process, and what you need from them."></textarea>
-          <div class="hint">Be clear, specific, and honest. This helps clients trust you.</div>
-        </div>
-      </div>
-
-      <!-- Right column -->
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm mb-1">Delivery Time <span class="required">*</span></label>
-          <select id="delivery" class="select" required>
-            <option value="">Select delivery time</option>
-            <option value="24 hours">24 hours</option>
-            <option value="2 days">2 days</option>
-            <option value="3 days">3 days</option>
-            <option value="5 days">5 days</option>
-            <option value="7 days">7 days</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-sm mb-1">Price (in ZAC) <span class="required">*</span></label>
-          <input id="priceZac" type="number" min="1" step="1" class="input" required placeholder="e.g. 25" />
-          <div class="hint">Student-friendly pricing works best. You can edit this later.</div>
-          <div class="mt-1 text-xs opacity-80">
-            Estimated in USD: <span id="priceUsdPreview">$0.00</span> (simulated, updates on live token launch).
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-sm mb-1">Skill Level <span class="required">*</span></label>
-          <select id="level" class="select" required>
-            <option value="">Select level</option>
-            <option value="Starter">Starter</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Pro">Pro</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-sm mb-1">Tags (comma-separated)</label>
-          <input id="tags" type="text" class="input" placeholder="e.g. ai, prompts, content, business" />
-          <div class="hint">Helps clients find your gig via search.</div>
-        </div>
-
-        <div>
-          <label class="block text-sm mb-1">Status</label>
-          <select id="status" class="select">
-            <option value="draft">Draft</option>
-            <option value="live">Live</option>
-          </select>
-          <div class="hint">You can keep it as draft until your profile and skills are ready.</div>
-        </div>
-
-        <div class="pt-3 flex gap-3 flex-wrap">
-          <button type="submit" class="btn-primary">
-            💾 Save Gig
-          </button>
-          <button type="button" class="btn-ghost" onclick="window.location.href='swipe-merchants.html'">
-            Cancel
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  <!-- Footer nav -->
-  <div class="footer">
-    <!-- POS / Home icon -->
-    <div class="nav-btn" title="POS" onclick="location.href='pos.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g1)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="g1" x1="0" x2="1">
-            <stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/>
-          </linearGradient>
-        </defs>
-        <rect x="3" y="4" width="18" height="12" rx="2" stroke="currentColor"/>
-        <path d="M7 8h10" stroke="currentColor" stroke-linecap="round"/>
-        <rect x="7" y="16" width="10" height="4" rx="1" stroke="currentColor"/>
-      </svg>
-    </div>
-
-    <!-- Add / Listing (can also link back here) -->
-    <div class="nav-btn" title="Add Listing" onclick="location.href='create-gig.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g2)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <circle cx="12" cy="12" r="9" stroke="currentColor"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-linecap="round"/>
-      </svg>
-    </div>
-
-    <!-- Wallet -->
-    <div class="nav-btn" title="Wallet" onclick="location.href='wallet.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g3)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g3" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor"/>
-        <circle cx="18" cy="12" r="1.6" fill="currentColor"/>
-      </svg>
-    </div>
-
-    <!-- Profile -->
-    <div class="nav-btn" title="Profile" onclick="location.href='profile.html'">
-      <svg class="nav-svg" viewBox="0 0 24 24" fill="none" stroke="url(#g4)" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="g4" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#9c4dff"/></linearGradient></defs>
-        <circle cx="12" cy="8" r="3" stroke="currentColor"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0" stroke="currentColor"/>
-      </svg>
-    </div>
-  </div>
+</div>
 
 <script>
-/* -------------------------------
-   Config & On-Chain helpers
-   ------------------------------- */
-const ZAC_TOKEN_ADDRESS = "0xfe4119a9cac1425d808526905e92386b4234bf2a"; // your ZAC token on Base
-const tokenABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function decimals() view returns (uint8)"
-];
-const GIGS_KEY = 'zepswipe_gigs_v1';
-const SIMULATED_ZAC_PRICE_USD = 0.15;
+/* ---------------- AUTH & VERIFY ---------------- */
+const student = JSON.parse(localStorage.getItem("zepStudent"));
+const learn   = JSON.parse(localStorage.getItem("zepLearn")) || {};
 
-/* -------------------------------
-   Auth check - same as merchant-dashboard
-   ------------------------------- */
-function requireAuth(){
-  const user = JSON.parse(localStorage.getItem('zepUser'));
-  if(!user || !user.loggedIn || !user.wallet){
-    window.location.href = 'login.html';
-    return null;
+if(!student){
+  location.href="student-login.html";
+}
+
+if(!student.verified){
+  document.getElementById("formCard").style.display="none";
+  document.getElementById("lockedCard").style.display="block";
+}
+
+/* ---------------- CREATE GIG ---------------- */
+function publish(){
+  const title = document.getElementById("title").value.trim();
+  const desc  = document.getElementById("desc").value.trim();
+  const price = Number(document.getElementById("price").value);
+
+  if(!title || !desc || !(price>0)){
+    alert("Please fill all fields");
+    return;
   }
-  return user;
-}
 
-/* -------------------------------
-   Render wallet address and fetch balances
-   ------------------------------- */
-async function renderUser(){
-  const user = requireAuth();
-  if(!user) return;
+  const gigs = JSON.parse(localStorage.getItem("zepGigs") || "[]");
 
-  const walletEl = document.getElementById('walletAddress');
-  walletEl.textContent = `${user.wallet.slice(0,6)}...${user.wallet.slice(-4)}`;
-
-  try {
-    const provider = new ethers.JsonRpcProvider("https://mainnet.base.org");
-    const contract = new ethers.Contract(ZAC_TOKEN_ADDRESS, tokenABI, provider);
-    const decimals = await contract.decimals();
-    const raw = await contract.balanceOf(user.wallet);
-    const formatted = Number(ethers.formatUnits(raw, decimals));
-    document.getElementById('zacBalance').textContent = `${formatted.toFixed(2)} ZAC`;
-    document.getElementById('usdValue').textContent = `≈ $${(formatted * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
-  } catch(err){
-    console.warn("ZAC fetch failed, using test credit", err);
-    const fallback = Number(localStorage.getItem('zacBalance') || 25);
-    document.getElementById('zacBalance').textContent = `${fallback} ZAC (Test)`;
-    document.getElementById('usdValue').textContent = `≈ $${(fallback * SIMULATED_ZAC_PRICE_USD).toFixed(2)} USD`;
-  }
-}
-
-/* -------------------------------
-   Wallet change listeners (MetaMask)
-   ------------------------------- */
-function setupWalletListeners(){
-  if(window.ethereum){
-    try {
-      window.ethereum.on && window.ethereum.on('accountsChanged', (accounts) => {
-        if(!accounts || accounts.length === 0){
-          localStorage.removeItem('zepUser');
-          window.location.href = 'login.html';
-        } else {
-          const user = JSON.parse(localStorage.getItem('zepUser') || '{}');
-          user.wallet = accounts[0];
-          localStorage.setItem('zepUser', JSON.stringify(user));
-          renderUser();
-        }
-      });
-      window.ethereum.on && window.ethereum.on('chainChanged', () => {
-        renderUser();
-      });
-    } catch(e){ console.warn("wallet listener failed", e); }
-  }
-}
-
-/* -------------------------------
-   Helpers
-   ------------------------------- */
-function getQueryParams(){
-  const params = new URLSearchParams(window.location.search);
-  return {
-    category: params.get('category') || '',
-    title: params.get('title') || ''
-  };
-}
-
-function readGigs(){
-  try{
-    return JSON.parse(localStorage.getItem(GIGS_KEY)) || [];
-  } catch(e){
-    return [];
-  }
-}
-
-function writeGigs(gigs){
-  localStorage.setItem(GIGS_KEY, JSON.stringify(gigs));
-}
-
-/* -------------------------------
-   Prefill form from URL params
-   ------------------------------- */
-function prefillForm(){
-  const { category, title } = getQueryParams();
-  if(category){
-    const select = document.getElementById('category');
-    if(select.querySelector(`option[value="${category}"]`)){
-      select.value = category;
-    }
-  }
-  if(title){
-    document.getElementById('title').value = decodeURIComponent(title);
-  }
-}
-
-/* -------------------------------
-   Price preview
-   ------------------------------- */
-function updatePricePreview(){
-  const val = Number(document.getElementById('priceZac').value || 0);
-  const preview = document.getElementById('priceUsdPreview');
-  const est = val * SIMULATED_ZAC_PRICE_USD;
-  preview.textContent = `$${isNaN(est) ? '0.00' : est.toFixed(2)}`;
-}
-
-/* -------------------------------
-   Form submit handler
-   ------------------------------- */
-function setupForm(){
-  const form = document.getElementById('gigForm');
-  const statusSelect = document.getElementById('status');
-  const statusLabel = document.getElementById('statusLabel');
-
-  statusSelect.addEventListener('change', ()=>{
-    statusLabel.textContent = statusSelect.value === 'live' ? 'Live' : 'Draft';
+  gigs.push({
+    id: Date.now(),
+    title,
+    desc,
+    price,
+    sellerWallet: student.wallet,
+    sellerName: student.name || "Zep Student",
+    university: student.university || "—",
+    country: student.country || "—",
+    verified: true
   });
 
-  document.getElementById('priceZac').addEventListener('input', updatePricePreview);
+  localStorage.setItem("zepGigs", JSON.stringify(gigs));
 
-  form.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    const user = requireAuth();
-    if(!user) return;
-
-    const category = document.getElementById('category').value.trim();
-    const title = document.getElementById('title').value.trim();
-    const tagline = document.getElementById('tagline').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const delivery = document.getElementById('delivery').value.trim();
-    const priceZac = Number(document.getElementById('priceZac').value || 0);
-    const level = document.getElementById('level').value.trim();
-    const tagsRaw = document.getElementById('tags').value.trim();
-    const status = document.getElementById('status').value;
-
-    if(!category || !title || !tagline || !description || !delivery || !priceZac || !level){
-      alert('Please fill all required fields.');
-      return;
-    }
-
-    const tags = tagsRaw
-      ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean)
-      : [];
-
-    const gigs = readGigs();
-    const id = 'gig_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-
-    const gig = {
-      id,
-      title,
-      tagline,
-      description,
-      category,
-      delivery,
-      priceZac,
-      level,
-      tags,
-      status,
-      ownerWallet: user.wallet,
-      createdAt: Date.now()
-    };
-
-    gigs.push(gig);
-    writeGigs(gigs);
-
-    alert('Gig saved locally. You can now wire this to live marketplace logic later.');
-    window.location.href = 'swipe-merchants.html';
-  });
+  alert("✅ Service published successfully");
+  location.href="swipe-merchants.html";
 }
-
-/* -------------------------------
-   Init
-   ------------------------------- */
-window.addEventListener('load', async ()=>{
-  const user = requireAuth();
-  if(!user) return;
-  prefillForm();
-  setupForm();
-  updatePricePreview();
-  renderUser();
-  setupWalletListeners();
-});
 </script>
+
 </body>
 </html>
