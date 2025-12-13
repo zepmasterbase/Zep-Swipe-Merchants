@@ -21,48 +21,107 @@ body{
   font-family:Poppins,sans-serif;
   background:var(--bg);
   color:#fff;
+  overflow-x:hidden;
 }
 .container{
   max-width:1100px;
-  margin:30px auto;
+  margin:28px auto 120px;
   padding:16px;
 }
+
+/* HEADER */
 .header{
-  padding:16px;
-  border-radius:16px;
+  padding:16px 18px;
+  border-radius:18px;
   background:var(--glass);
-  border:1px solid rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.12);
   display:flex;
   justify-content:space-between;
   align-items:center;
-  backdrop-filter:blur(14px);
+  backdrop-filter:blur(16px);
+  box-shadow:0 0 40px rgba(0,240,255,.35);
 }
 .brand{
   font-family:Orbitron;
-  font-size:1.4rem;
+  font-size:1.5rem;
   background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
+.header-right{
+  text-align:right;
+}
+.addr{
+  font-family:Orbitron;
+  font-size:.85rem;
+  color:#d7faff;
+}
+.btn{
+  margin-top:6px;
+  padding:10px 16px;
+  border-radius:999px;
+  border:none;
+  font-family:Orbitron;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050018;
+  cursor:pointer;
+}
+
+/* VERIFIED BANNER */
+.verified-banner{
+  margin-top:18px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(0,240,255,.08);
+  border:1px solid rgba(0,240,255,.35);
+  font-family:Orbitron;
+  display:none;
+}
+
+/* GRID */
 .grid{
   margin-top:24px;
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
   gap:18px;
 }
+
+/* CARD */
 .card{
   padding:16px;
-  border-radius:16px;
+  border-radius:18px;
   background:var(--glass);
-  border:1px solid rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.12);
   backdrop-filter:blur(14px);
+  transition:.2s;
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 0 28px rgba(156,77,255,.35);
+}
+.card h3{
+  margin:0;
+  font-family:Orbitron;
+  font-size:1rem;
+}
+.card p{
+  font-size:13px;
+  opacity:.85;
+  margin:6px 0 10px;
+}
+.seller{
+  font-size:11px;
+  opacity:.7;
 }
 .price{
   font-family:Orbitron;
   font-size:1.1rem;
+  margin-top:6px;
 }
-.btn{
+.buy{
   margin-top:12px;
+  width:100%;
   padding:12px;
   border-radius:999px;
   border:none;
@@ -73,9 +132,29 @@ body{
   cursor:pointer;
 }
 .status{
-  margin-top:10px;
-  font-size:13px;
+  margin-top:8px;
+  font-size:12px;
   opacity:.85;
+}
+
+/* FOOTER */
+.footer{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  padding:14px 22px;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  justify-content:space-around;
+  backdrop-filter:blur(10px);
+}
+.fbtn{
+  width:56px;height:56px;
+  border-radius:18px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  text-decoration:none;
 }
 </style>
 </head>
@@ -83,12 +162,29 @@ body{
 <body>
 <div class="container">
 
+  <!-- HEADER -->
   <div class="header">
     <div class="brand">Swipe Merchants</div>
-    <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+    <div class="header-right">
+      <div id="walletAddr" class="addr">—</div>
+      <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
   </div>
 
+  <!-- VERIFIED -->
+  <div id="verifiedBanner" class="verified-banner">
+    ✔ Verified Student Merchant — Payments go directly to your wallet
+  </div>
+
+  <!-- MARKET -->
   <div class="grid" id="marketplace"></div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <a class="fbtn" href="https://zepswipe.com/dashboard-student.html">🏠</a>
+  <a class="fbtn" href="https://zepswipe.com/profile.html">👤</a>
+  <a class="fbtn" href="https://zepswipe.com/wallet.html">💼</a>
 </div>
 
 <script>
@@ -100,31 +196,31 @@ const ERC20_ABI = [
   "function transfer(address to, uint amount) returns (bool)"
 ];
 
-/* ---------------- SAMPLE LISTINGS ---------------- */
+/* ---------------- LISTINGS ---------------- */
 const listings = [
   {
     title: "AI Content Writer",
-    desc: "Blog posts, LinkedIn content & SEO writing",
+    desc: "Blogs, LinkedIn posts, captions & SEO content",
     price: 25,
-    seller: "0xSELLER_WALLET_ADDRESS_1"
+    seller: "0xSELLER_WALLET_1"
   },
   {
     title: "No-Code Automation",
-    desc: "Zapier, Airtable & workflow automation",
+    desc: "Zapier, Airtable, Notion workflows",
     price: 40,
-    seller: "0xSELLER_WALLET_ADDRESS_2"
+    seller: "0xSELLER_WALLET_2"
   },
   {
-    title: "Graphic Design",
-    desc: "Logos, banners & brand assets",
+    title: "Social Design",
+    desc: "Canva templates, flyers & brand kits",
     price: 30,
-    seller: "0xSELLER_WALLET_ADDRESS_3"
+    seller: "0xSELLER_WALLET_3"
   }
 ];
 
 let provider, signer, userAddress;
 
-/* ---------------- INIT ---------------- */
+/* ---------------- LOAD ---------------- */
 const market = document.getElementById("marketplace");
 
 listings.forEach((l,i)=>{
@@ -132,9 +228,10 @@ listings.forEach((l,i)=>{
   d.className="card";
   d.innerHTML=`
     <h3>${l.title}</h3>
-    <p style="opacity:.85">${l.desc}</p>
+    <p>${l.desc}</p>
+    <div class="seller">Seller wallet: ${l.seller.slice(0,6)}...${l.seller.slice(-4)}</div>
     <div class="price">${l.price} USDC</div>
-    <button class="btn" onclick="buy(${i})">Buy Service</button>
+    <button class="buy" onclick="buy(${i})">Buy Service</button>
     <div class="status" id="status-${i}"></div>
   `;
   market.appendChild(d);
@@ -150,10 +247,11 @@ async function connectWallet(){
   await provider.send("eth_requestAccounts",[]);
   signer = await provider.getSigner();
   userAddress = await signer.getAddress();
-  alert("Wallet connected");
+  document.getElementById("walletAddr").textContent =
+    userAddress.slice(0,6)+"..."+userAddress.slice(-4);
 }
 
-/* ---------------- BUY FUNCTION ---------------- */
+/* ---------------- BUY ---------------- */
 async function buy(index){
   const item = listings[index];
   const status = document.getElementById(`status-${index}`);
@@ -164,7 +262,7 @@ async function buy(index){
   }
 
   try{
-    status.textContent = "Processing payment...";
+    status.textContent = "Processing USDC payment...";
     const token = new ethers.Contract(USDC_ADDRESS, ERC20_ABI, signer);
     const decimals = await token.decimals();
     const amount = ethers.parseUnits(item.price.toString(), decimals);
@@ -173,12 +271,26 @@ async function buy(index){
     status.textContent = "Waiting for confirmation...";
     await tx.wait();
 
-    status.textContent = "✅ Payment successful!";
+    status.textContent = "✅ Payment successful — seller paid";
   }catch(e){
     console.error(e);
     status.textContent = "❌ Transaction failed";
   }
 }
+
+/* ---------------- VERIFIED CHECK ---------------- */
+window.onload=()=>{
+  const progress = JSON.parse(localStorage.getItem("zepProgress")||"{}");
+  let verified=false;
+
+  Object.values(progress).forEach(c=>{
+    if(c.day>=21) verified=true;
+  });
+
+  if(verified){
+    document.getElementById("verifiedBanner").style.display="block";
+  }
+};
 </script>
 </body>
 </html>
