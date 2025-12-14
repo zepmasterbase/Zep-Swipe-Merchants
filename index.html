@@ -1,307 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ZepSwipe Merchants — On-Chain Marketplace</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Swipe Merchants — Hire Verified Student Talent</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-:root {
-  --zep-blue: #00f0ff;
-  --zep-violet: #9c4dff;
-  --zep-lime: #a6ff00;
-  --glass: rgba(255,255,255,0.06);
-  --bg: radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
-}
-body {
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg);
-  color: #fff;
-  margin: 0;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-/* Header */
-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 16px 22px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  animation: headerGlow 3s infinite alternate ease-in-out;
-  box-shadow: 0 0 18px rgba(0,240,255,0.15);
-}
-@keyframes headerGlow {
-  0% { box-shadow: 0 0 10px rgba(0,240,255,0.25); }
-  100% { box-shadow: 0 0 35px rgba(156,77,255,0.5); }
-}
-.logo {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  font-size: 1.4rem;
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(0,240,255,0.6);
-}
-.connect-btn {
-  padding: 10px 20px;
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  color: #050018;
-  border-radius: 999px;
-  font-family: 'Orbitron';
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.connect-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(0,240,255,0.4);
-}
-/* Hero */
-.hero {
-  text-align: center;
-  margin: 3rem 1rem;
-}
-.hero h1 {
-  font-family: 'Orbitron';
-  font-size: 2.2rem;
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(0,240,255,0.4);
-}
-.hero p {
-  font-size: 1.1rem;
-  opacity: 0.8;
-  max-width: 600px;
-  margin: 0.5rem auto;
-}
-.hero button {
-  margin-top: 1.5rem;
-  background: linear-gradient(90deg,var(--zep-lime),var(--zep-blue));
-  color: #050018;
-  font-weight: 700;
-  border-radius: 999px;
-  padding: 12px 30px;
-  transition: 0.3s;
-}
-.hero button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(0,240,255,0.5);
-}
-/* Marketplace */
-.market {
-  padding: 1rem 1.5rem 3rem;
-}
-.section-title {
-  font-family: 'Orbitron';
-  font-size: 1.3rem;
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
-}
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-  gap: 1rem;
-}
-.card {
-  background: var(--glass);
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.08);
-  padding: 16px;
-  text-align: center;
-  backdrop-filter: blur(14px);
-  box-shadow: 0 0 20px rgba(0,240,255,0.15);
-  animation: pulseCard 3s infinite alternate ease-in-out;
-  transition: 0.3s;
-}
-.card:hover { transform: translateY(-5px) scale(1.03); }
-@keyframes pulseCard {
-  0% { box-shadow: 0 0 10px rgba(0,240,255,0.1); }
-  100% { box-shadow: 0 0 30px rgba(156,77,255,0.3); }
-}
-.card img {
-  width: 70px; height: 70px;
-  filter: drop-shadow(0 0 10px rgba(0,240,255,0.4));
-}
-.price {
-  font-family: 'Orbitron';
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin: 6px 0;
-}
-.btn-buy {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  color: #050018;
-  font-weight: 600;
-  font-family: 'Orbitron';
-  text-decoration: none;
-  transition: 0.3s;
-}
-.btn-buy:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px rgba(0,240,255,0.5);
-}
-.badge {
-  background: linear-gradient(90deg,var(--zep-lime),var(--zep-blue));
-  color: #050018;
-  font-weight: 700;
-  font-size: 0.7rem;
-  padding: 4px 8px;
-  border-radius: 999px;
-  margin-top: 4px;
-  display: inline-block;
+:root{
+  --zep-blue:#00f0ff;
+  --zep-violet:#9c4dff;
+  --bg:radial-gradient(circle at 25% 10%, #050018 0%, #000010 100%);
+  --glass:rgba(255,255,255,0.06);
 }
 
-/* Analytics Section */
-.analytics {
-  padding: 1rem 1.5rem 6rem;
-}
-.analytics-card {
-  background: var(--glass);
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 20px;
-  backdrop-filter: blur(16px);
-  box-shadow: 0 0 25px rgba(0,240,255,0.2);
-  animation: pulseCard 3s infinite alternate ease-in-out;
-}
-.analytics h2 {
-  font-family: 'Orbitron';
-  font-size: 1.2rem;
-  background: linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Poppins,sans-serif;
+  background:var(--bg);
+  color:#fff;
+  line-height:1.6;
 }
 
-/* Footer */
-footer {
-  position: fixed;
-  bottom: 0; left: 0;
-  width: 100%;
-  background: rgba(15,15,30,0.9);
-  border-top: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  display: flex; justify-content: space-around; align-items: center;
-  padding: 10px 0;
-  box-shadow: 0 0 25px rgba(0,240,255,0.3);
-  animation: footerPulse 3s infinite alternate ease-in-out;
+/* ---------- LAYOUT ---------- */
+.container{
+  max-width:1100px;
+  margin:0 auto;
+  padding:28px 18px;
 }
-@keyframes footerPulse {
-  0% { box-shadow: 0 0 15px rgba(0,240,255,0.2); }
-  100% { box-shadow: 0 0 35px rgba(156,77,255,0.4); }
+
+/* ---------- HEADER ---------- */
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px;
+  border-radius:20px;
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(18px);
+  box-shadow:0 0 40px rgba(0,240,255,.25);
 }
-.footer-icon {
-  opacity: 0.3;
-  pointer-events: none;
+
+.logo{
+  font-family:Orbitron;
+  font-size:1.6rem;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
-.footer-icon svg {
-  width: 28px; height: 28px;
-  stroke: var(--zep-blue);
-  filter: drop-shadow(0 0 6px var(--zep-violet));
+
+.nav a{
+  margin-left:18px;
+  text-decoration:none;
+  font-size:13px;
+  color:#dffbff;
+  opacity:.9;
+}
+
+.cta-btn{
+  padding:10px 18px;
+  border-radius:999px;
+  border:none;
+  font-family:Orbitron;
+  font-size:12px;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  color:#050015;
+  box-shadow:0 0 22px rgba(0,240,255,.4);
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  margin-top:60px;
+  text-align:center;
+}
+
+.hero h1{
+  font-family:Orbitron;
+  font-size:2.4rem;
+  margin-bottom:12px;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero p{
+  max-width:720px;
+  margin:0 auto 28px;
+  font-size:16px;
+  opacity:.85;
+}
+
+.hero-actions{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+/* ---------- SECTION ---------- */
+.section{
+  margin-top:90px;
+}
+
+.section-title{
+  font-family:Orbitron;
+  font-size:1.4rem;
+  margin-bottom:14px;
+  background:linear-gradient(90deg,var(--zep-blue),var(--zep-violet));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.section-sub{
+  max-width:680px;
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:32px;
+}
+
+/* ---------- HOW IT WORKS ---------- */
+.steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+
+.step{
+  padding:20px;
+  border-radius:20px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.step h3{
+  font-family:Orbitron;
+  font-size:1rem;
+  margin-bottom:8px;
+}
+
+/* ---------- SKILLS ---------- */
+.skills{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+
+.skill{
+  padding:16px;
+  border-radius:18px;
+  background:rgba(0,0,0,.65);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.skill strong{
+  font-family:Orbitron;
+  font-size:.9rem;
+}
+
+.skill span{
+  display:block;
+  font-size:11px;
+  opacity:.75;
+  margin-top:4px;
+}
+
+/* ---------- PROOF ---------- */
+.proof-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:18px;
+}
+
+.proof-card{
+  padding:18px;
+  border-radius:20px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.proof-card h4{
+  font-family:Orbitron;
+  font-size:.95rem;
+}
+
+.proof-card p{
+  font-size:12px;
+  opacity:.8;
+}
+
+/* ---------- CTA ---------- */
+.final-cta{
+  margin-top:100px;
+  padding:40px 20px;
+  border-radius:24px;
+  background:rgba(0,0,0,.7);
+  border:1px solid rgba(0,240,255,.35);
+  text-align:center;
+}
+
+.final-cta h2{
+  font-family:Orbitron;
+  font-size:1.6rem;
+  margin-bottom:10px;
+}
+
+.final-cta p{
+  font-size:14px;
+  opacity:.85;
+  margin-bottom:24px;
+}
+
+/* ---------- FOOTER ---------- */
+footer{
+  margin-top:80px;
+  padding:30px 0;
+  text-align:center;
+  font-size:12px;
+  opacity:.6;
 }
 </style>
 </head>
 
 <body>
-<header>
-  <div class="logo">ZepSwipe Merchants</div>
-  <button class="connect-btn" onclick="window.location.href='sign-in.html'">Connect Wallet</button>
-</header>
 
-<section class="hero">
-  <h1>Merchants On-Chain</h1>
-  <p>Empowering verified global vendors to earn, store, and sell using decentralized storage via <strong>Walrus</strong> and verified data through <strong>Seal</strong> and <strong>Nautilus</strong>.</p>
-  <button onclick="window.location.href='sign-in.html'">List a Product</button>
-</section>
+<div class="container">
 
-<section class="market">
-  <h2 class="section-title">Featured Merchants</h2>
-  <div class="product-grid">
-    <div class="card">
-      <img src="https://cdn-icons-png.flaticon.com/512/860/860784.png" alt="Phone"/>
-      <p>Smartphone 12 Pro</p>
-      <p class="price">220 USDT</p>
-      <span class="badge">Verified</span><br>
-      <a href="#" class="btn-buy">Add to Cart</a>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">Swipe Merchants</div>
+    <div class="nav">
+      <a href="#how">How it works</a>
+      <a href="#skills">Skills</a>
+      <a href="https://zepswipe.com/learn-earn.html">For Students</a>
+      <button class="cta-btn" onclick="location.href='signin.html'">Browse Talent</button>
     </div>
-    <div class="card">
-      <img src="https://cdn-icons-png.flaticon.com/512/2232/2232688.png" alt="eBook"/>
-      <p>Design eBook Pack</p>
-      <p class="price">30 ZAC</p>
-      <span class="badge">Digital Vendor</span><br>
-      <a href="#" class="btn-buy">Add to Cart</a>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Hire Verified Student Talent</h1>
+    <p>
+      Swipe Merchants is a proof-of-skill marketplace where students earn verification
+      by completing real tasks and publishing public proof — not resumes or GPA.
+    </p>
+
+    <div class="hero-actions">
+      <button class="cta-btn" onclick="location.href='marketplace.html'">Browse Verified Talent</button>
+      <button class="cta-btn" style="background:none;color:#fff;border:1px solid rgba(255,255,255,.25)"
+        onclick="location.href='https://zepswipe.com/learn-earn.html'">
+        Become a Seller
+      </button>
     </div>
-    <div class="card">
-      <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" alt="Burger"/>
-      <p>McCampus Meal</p>
-      <p class="price">4.50 USDT</p>
-      <span class="badge">Partnered Merchant</span><br>
-      <a href="#" class="btn-buy">Order Now</a>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="section-title">How Swipe Merchants Works</div>
+    <div class="section-sub">
+      We replace CVs and guesswork with real, public proof of skills.
     </div>
-  </div>
-</section>
 
-<section class="analytics">
-  <div class="analytics-card">
-    <h2>Live Sales Analytics</h2>
-    <canvas id="salesChart"></canvas>
-  </div>
-</section>
+    <div class="steps">
+      <div class="step">
+        <h3>1. Learn & Prove</h3>
+        <p>Students complete 21 days of real tasks and publish proof on Zora.</p>
+      </div>
+      <div class="step">
+        <h3>2. Get Verified</h3>
+        <p>Only students who finish the challenge unlock verified seller status.</p>
+      </div>
+      <div class="step">
+        <h3>3. Hire with Confidence</h3>
+        <p>Clients hire based on visible work — not claims.</p>
+      </div>
+    </div>
+  </section>
 
-<footer>
-  <div class="footer-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="2"/></svg></div>
-  <div class="footer-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path d="M12 3v18m9-9H3"/></svg></div>
-  <div class="footer-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><path d="M3 6h18l-2 12H5z"/></svg></div>
-  <div class="footer-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></div>
-</footer>
+  <!-- SKILLS -->
+  <section class="section" id="skills">
+    <div class="section-title">What You Can Hire For</div>
 
-<script>
-// Sales Chart
-const ctx = document.getElementById('salesChart').getContext('2d');
-const salesChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: Array.from({length:10}, (_,i)=>`T-${10-i}`),
-    datasets: [{
-      label: 'Live Sales ($ZAC)',
-      data: Array.from({length:10}, ()=>Math.floor(Math.random()*20)+10),
-      borderColor: '#00f0ff',
-      backgroundColor: 'rgba(0,240,255,0.15)',
-      fill: true,
-      tension: 0.4,
-      pointRadius: 4,
-      pointHoverRadius: 6
-    }]
-  },
-  options: {
-    plugins: { legend: { display: false }},
-    scales: {
-      x: { ticks: { color: '#9c9cff' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { ticks: { color: '#9c9cff' }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
-    }
-  }
-});
+    <div class="skills">
+      <div class="skill"><strong>AI Content Writing</strong><span>Blogs, social posts, scripts</span></div>
+      <div class="skill"><strong>Prompt Engineering</strong><span>Reusable AI workflows</span></div>
+      <div class="skill"><strong>No-Code Websites</strong><span>Landing pages & MVPs</span></div>
+      <div class="skill"><strong>Social Design</strong><span>Carousels, flyers, templates</span></div>
+      <div class="skill"><strong>Video Editing</strong><span>Short-form clips</span></div>
+      <div class="skill"><strong>Chatbots</strong><span>FAQ & support flows</span></div>
+      <div class="skill"><strong>Research & Leads</strong><span>Clean data lists</span></div>
+      <div class="skill"><strong>Automations</strong><span>Micro workflows</span></div>
+    </div>
+  </section>
 
-setInterval(()=>{
-  const val = Math.floor(Math.random()*25)+5;
-  salesChart.data.datasets[0].data.shift();
-  salesChart.data.datasets[0].data.push(val);
-  salesChart.update();
-}, 2000);
-</script>
+  <!-- PROOF -->
+  <section class="section">
+    <div class="section-title">Why Clients Trust Swipe Merchants</div>
+
+    <div class="proof-grid">
+      <div class="proof-card">
+        <h4>Public Proof</h4>
+        <p>Every seller links real work published publicly.</p>
+      </div>
+      <div class="proof-card">
+        <h4>Verified Process</h4>
+        <p>21 days of structured, skill-based challenges.</p>
+      </div>
+      <div class="proof-card">
+        <h4>Student Advantage</h4>
+        <p>High quality work at student-friendly pricing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="final-cta">
+    <h2>Ready to Hire Verified Talent?</h2>
+    <p>Browse students who already proved their skills.</p>
+    <button class="cta-btn" onclick="location.href='marketplace.html'">Explore Marketplace</button>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 Swipe Merchants · Built on Base · Powered by Zep Swipe
+  </footer>
+
+</div>
 
 </body>
 </html>
